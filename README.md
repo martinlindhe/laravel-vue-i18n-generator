@@ -20,12 +20,12 @@ Then generate the include file with ```php artisan vue-i18n:generate```
 Adjust your vue app with something like:
 
 ```js
-var Vue = require('vue')
-var i18n = require('vue-i18n')
+import Vue from 'vue';
+import VueInternationalization from 'vue-i18n';
 
 import Locales from './vue-i18n-locales.generated.js';
 
-Vue.use(i18n, {
+Vue.use(VueInternationalization, {
     lang: 'en',
     locales: Locales
 });
