@@ -87,4 +87,39 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 
         $this->destroyLocaleFilesFrom($arr, $root);
     }
+
+    function testNamed()
+    {
+        $arr = [
+            'en' => [
+                'help' => [
+                    'yes' => 'see :link y :lonk',
+                ]
+            ],
+            'sv' => [
+                'help' => [
+                    'yes' => 'se :lonk a :link',
+                ]
+            ]
+        ];
+
+        $root = $this->generateLocaleFilesFrom($arr);
+
+        $this->assertEquals(
+            'export default {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "see {link} y {lonk}"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    },' . PHP_EOL
+            . '    "sv": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "se {lonk} a {link}"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator)->generateFromPath($root));
+
+        $this->destroyLocaleFilesFrom($arr, $root);
+    }
 }

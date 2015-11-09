@@ -44,11 +44,34 @@ class Generator
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot()) {
                 $noExt = $this->removeExtension($fileinfo->getFilename());
-                $data[$noExt] = include($path . '/' . $fileinfo->getFilename());
+                $tmp = include($path . '/' . $fileinfo->getFilename());
+                $res = [];
+
+                foreach ($tmp as $key => $val) {
+                    $res[$key] = $this->adjustString($val);
+                }
+
+                $data[$noExt] = $res;
             }
         }
 
         return $data;
+    }
+
+    /**
+     * Turn Laravel style ":link" into vue-i18n style "{link}"
+     * @param string $s
+     * @return string
+     */
+    private function adjustString($s)
+    {
+        return preg_replace_callback(
+            '/:\w*/',
+            function ($matches) {
+                return '{' . mb_substr($matches[0], 1) . '}';
+            },
+            $s
+        );
     }
 
     /**
