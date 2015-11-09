@@ -94,11 +94,9 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
             'en' => [
                 'help' => [
                     'yes' => 'see :link y :lonk',
-                ]
-            ],
-            'sv' => [
-                'help' => [
-                    'yes' => 'se :lonk a :link',
+                    'no' => [
+                        'one' => 'see :link',
+                    ]
                 ]
             ]
         ];
@@ -109,12 +107,10 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
             'export default {' . PHP_EOL
             . '    "en": {' . PHP_EOL
             . '        "help": {' . PHP_EOL
-            . '            "yes": "see {link} y {lonk}"' . PHP_EOL
-            . '        }' . PHP_EOL
-            . '    },' . PHP_EOL
-            . '    "sv": {' . PHP_EOL
-            . '        "help": {' . PHP_EOL
-            . '            "yes": "se {lonk} a {link}"' . PHP_EOL
+            . '            "yes": "see {link} y {lonk}",' . PHP_EOL
+            . '            "no": {' . PHP_EOL
+            . '                "one": "see {link}"' . PHP_EOL
+            . '            }' . PHP_EOL
             . '        }' . PHP_EOL
             . '    }' . PHP_EOL
             . '}' . PHP_EOL,

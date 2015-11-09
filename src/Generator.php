@@ -45,17 +45,27 @@ class Generator
             if (!$fileinfo->isDot()) {
                 $noExt = $this->removeExtension($fileinfo->getFilename());
                 $tmp = include($path . '/' . $fileinfo->getFilename());
-                $res = [];
 
-                foreach ($tmp as $key => $val) {
-                    $res[$key] = $this->adjustString($val);
-                }
-
-                $data[$noExt] = $res;
+                $data[$noExt] = $this->adjustArray($tmp);
             }
         }
 
         return $data;
+    }
+
+    private function adjustArray(array $arr)
+    {
+        $res = [];
+
+        foreach ($arr as $key => $val) {
+            if (is_string($val)) {
+                $res[$key] = $this->adjustString($val);
+            } else {
+                $res[$key] = $this->adjustArray($val);
+            }
+        }
+
+        return $res;
     }
 
     /**
