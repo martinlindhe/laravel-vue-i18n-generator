@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/martinlindhe/laravel-vue-i18n-generator.png?branch=master)](https://travis-ci.org/martinlindhe/laravel-vue-i18n-generator)
 
 
-Laravel 5 package that allows you to share your Laravel translations
+Laravel 5 package that allows you to share your [Laravel localizations](http://laravel.com/docs/5.1/localization)
 with your [vue](http://vuejs.org/) front-end, using [vue-i18n](https://github.com/kazupon/vue-i18n).
 
 
@@ -33,6 +33,32 @@ Vue.use(VueInternationalization, {
 });
 
 ...
+```
+
+## Template names
+
+This generate adjusts the strings in order to work with vue-i18n's template names,
+making it simple to share also named templates from your Laravel translations.
+ 
+resource/lang/message.php:
+```php
+return [
+    'hello' => 'Hello :name',
+];
+```
+
+Blade template:
+```php
+<div class="message">
+  <p>{{ trans('message.hello', ['name' => 'visitor']) }}</p>
+</div>
+```
+
+Vue template:
+```js
+<div class="message">
+  <p>{{ $t('message.hello', { name: "visitor"}) }}</p>
+</div>
 ```
 
 
