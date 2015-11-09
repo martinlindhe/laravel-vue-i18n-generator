@@ -64,7 +64,7 @@ Blade template:
 Vue template:
 ```js
 <div class="message">
-    <p>{{ $t('message.hello', { name: "visitor"}) }}</p>
+    <p>{{ $t('message.hello', {name: "visitor"}) }}</p>
 </div>
 ```
 
