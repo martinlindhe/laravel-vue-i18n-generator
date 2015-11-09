@@ -65,6 +65,10 @@ class Generator
      */
     private function adjustString($s)
     {
+        if (!is_string($s)) {
+            return $s;
+        }
+
         return preg_replace_callback(
             '/:\w*/',
             function ($matches) {
