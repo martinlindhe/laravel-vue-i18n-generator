@@ -37,7 +37,7 @@ Vue.use(VueInternationalization, {
 
 ## Template names
 
-This generate adjusts the strings in order to work with vue-i18n's template names,
+The generator adjusts the strings in order to work with vue-i18n's template names,
 making it simple to share also named templates from your Laravel translations.
  
 resource/lang/message.php:
@@ -45,6 +45,13 @@ resource/lang/message.php:
 return [
     'hello' => 'Hello :name',
 ];
+```
+
+in vue-i18n-locales.generated.js:
+```js
+...
+    "hello": "Hello {name}",
+...
 ```
 
 Blade template:
