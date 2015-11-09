@@ -1,0 +1,25 @@
+{
+    "name": "martinlindhe/laravel-vue-i18n-generator",
+    "license": "MIT",
+    "description": "Generates a vue-i18n compatible include file from your Laravel translations.",
+    "keywords": ["laravel","vue-i18n"],
+    "homepage": "http://github.com/martinlindhe/laravel-vue-i18n-generator",
+    "authors": [
+        {
+            "name": "Martin Lindhe",
+            "email": "martin@ubique.se"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "laravel/framework": "~5.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "MartinLindhe\\VueInternationalizationGenerator\\": "src/"
+        }
+    }
+}
