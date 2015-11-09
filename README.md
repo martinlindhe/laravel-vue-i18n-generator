@@ -50,14 +50,14 @@ return [
 Blade template:
 ```php
 <div class="message">
-  <p>{{ trans('message.hello', ['name' => 'visitor']) }}</p>
+    <p>{{ trans('message.hello', ['name' => 'visitor']) }}</p>
 </div>
 ```
 
 Vue template:
 ```js
 <div class="message">
-  <p>{{ $t('message.hello', { name: "visitor"}) }}</p>
+    <p>{{ $t('message.hello', { name: "visitor"}) }}</p>
 </div>
 ```
 
