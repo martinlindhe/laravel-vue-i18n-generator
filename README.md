@@ -73,4 +73,4 @@ Vue template:
 
 The generated file is an ES6 module.
 
-Limitation: there is no vue-i18n feature similar to Laravel's [pluralization](http://laravel.com/docs/5.1/localization#pluralization)
+[Pluralization](http://laravel.com/docs/5.1/localization#pluralization) don't work with vue-i18n
