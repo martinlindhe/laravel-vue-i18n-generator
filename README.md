@@ -35,10 +35,10 @@ Vue.use(VueInternationalization, {
 ...
 ```
 
-## Template names
+## Parameters
 
-The generator adjusts the strings in order to work with vue-i18n's template names,
-making it simple to share also named templates from your Laravel translations.
+The generator adjusts the strings in order to work with vue-i18n's named formatting,
+so you can reuse your Laravel translations with parameters.
  
 resource/lang/message.php:
 ```php
