@@ -80,7 +80,7 @@ class Generator
         }
 
         return preg_replace_callback(
-            '/(<[^>]*>(*SKIP)(*FAIL)|:\w*)/',
+            '/(?<!mailto|tel):\w*/',
             function ($matches) {
                 return '{' . mb_substr($matches[0], 1) . '}';
             },
