@@ -118,4 +118,29 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 
         $this->destroyLocaleFilesFrom($arr, $root);
     }
+
+    function testLeaveHtmlTags()
+    {
+        $arr = [
+            'en' => [
+                'help' => [
+                    'yes' => 'see <a href="mailto:mail@com">',
+                ]
+            ]
+        ];
+
+        $root = $this->generateLocaleFilesFrom($arr);
+
+        $this->assertEquals(
+            'export default {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "see <a href=\"mailto:mail@com\">",' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator)->generateFromPath($root));
+
+        $this->destroyLocaleFilesFrom($arr, $root);
+    }
 }
