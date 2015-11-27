@@ -125,6 +125,7 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
             'en' => [
                 'help' => [
                     'yes' => 'see <a href="mailto:mail@com">',
+                    'no' => 'see <a href=":link">',
                 ]
             ]
         ];
@@ -135,7 +136,8 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
             'export default {' . PHP_EOL
             . '    "en": {' . PHP_EOL
             . '        "help": {' . PHP_EOL
-            . '            "yes": "see <a href=\"mailto:mail@com\">"' . PHP_EOL
+            . '            "yes": "see <a href=\"mailto:mail@com\">",' . PHP_EOL
+            . '            "no": "see <a href=\"{link}\">"' . PHP_EOL
             . '        }' . PHP_EOL
             . '    }' . PHP_EOL
             . '}' . PHP_EOL,
