@@ -25,6 +25,11 @@ class GeneratorProvider extends ServiceProvider
         $this->commands(
             'vue-i18n.generate'
         );
+
+        $this->publishes([
+            __DIR__.'/config/vue-i18n-generator.php' => config_path('vue-i18n-generator.php'),
+        ]);
+
     }
 
     /**
