@@ -17,7 +17,16 @@ In ```config/app.php``` providers:
 MartinLindhe\VueInternationalizationGenerator\GeneratorProvider::class,
 ```
 
-Then generate the include file with ```php artisan vue-i18n:generate```
+Next, publish the package default config:
+
+```
+php artisan vendor:publish
+```
+
+Then generate the include file with
+```
+php artisan vue-i18n:generate
+```
 
 Adjust your vue app with something like:
 
