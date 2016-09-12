@@ -20,7 +20,7 @@ MartinLindhe\VueInternationalizationGenerator\GeneratorProvider::class,
 Next, publish the package default config:
 
 ```
-php artisan vendor:publish
+php artisan vendor:publish --provider="MartinLindhe\VueInternationalizationGenerator\GeneratorProvider"
 ```
 
 Then generate the include file with
