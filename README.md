@@ -28,12 +28,11 @@ Then generate the include file with
 php artisan vue-i18n:generate
 ```
 
-Adjust your vue app with something like:
+For vue 1.0, adjust your vue app with something like:
 
 ```js
 import Vue from 'vue';
 import VueInternationalization from 'vue-i18n';
-
 import Locales from './vue-i18n-locales.generated.js';
 
 Vue.use(VueInternationalization, {
@@ -43,6 +42,24 @@ Vue.use(VueInternationalization, {
 
 ...
 ```
+
+For vue 2.0, adjust your vue app with something like:
+```js
+import Vue from 'vue';
+import VueInternalization from 'vue-i18n';
+import Locales from './vue-i18n-locales.generated.js';
+
+Vue.use(VueInternalization);
+
+Vue.config.lang = 'en';
+
+Object.keys(Locales).forEach(function (lang) {
+  Vue.locale(lang, Locales[lang])
+});
+
+...
+```
+
 
 ## Parameters
 
