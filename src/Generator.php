@@ -44,6 +44,10 @@ class Generator
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot()) {
                 $noExt = $this->removeExtension($fileinfo->getFilename());
+                // Ignore non *.php files (ex.: .gitignore, vim swap files etc.)
+                if (pathinfo($fileinfo->getFileName())['extension'] !== 'php') {
+                    continue;
+                }
                 $tmp = include($path . '/' . $fileinfo->getFilename());
 
                 $data[$noExt] = $this->adjustArray($tmp);
