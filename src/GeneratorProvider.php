@@ -30,6 +30,10 @@ class GeneratorProvider extends ServiceProvider
             __DIR__.'/config/vue-i18n-generator.php' => config_path('vue-i18n-generator.php'),
         ]);
 
+         $this->mergeConfigFrom(
+            __DIR__.'/config/vue-i18n-generator.php',
+            'vue-i18n-generator'
+        );
     }
 
     /**
