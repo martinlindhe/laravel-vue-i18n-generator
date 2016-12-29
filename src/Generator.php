@@ -42,10 +42,21 @@ class Generator
 
         $dir = new DirectoryIterator($path);
         foreach ($dir as $fileinfo) {
-            if (!$fileinfo->isDot()) {
+            // Do not mess with dotfiles at all.
+            if ($fileinfo->isDot()) {
+                continue;
+            }
+
+            // Check if the "file" is a subdirectory which has to be scanned.
+            if ($fileinfo->isDir()) {
+                // Recursivley iterate through subdirs, until everything was allocated.
+                $data[$fileinfo->getFilename()] =
+                    $this->allocateLocaleArray($path . '/' . $fileinfo->getFilename());
+            } else {
                 $noExt = $this->removeExtension($fileinfo->getFilename());
+
                 // Ignore non *.php files (ex.: .gitignore, vim swap files etc.)
-                if (pathinfo($fileinfo->getFileName())['extension'] !== 'php') {
+                if (pathinfo($fileinfo->getFileName(), PATHINFO_EXTENSION) !== 'php') {
                     continue;
                 }
                 $tmp = include($path . '/' . $fileinfo->getFilename());
