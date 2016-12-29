@@ -50,7 +50,8 @@ class Generator
             // Check if the "file" is a subdirectory which has to be scanned.
             if ($fileinfo->isDir()) {
                 // Recursivley iterate through subdirs, until everything was allocated.
-                $data = $this->allocateLocaleArray($path . '/' . $fileinfo->getFilename());
+                $data[$fileinfo->getFilename()] =
+                    $this->allocateLocaleArray($path . '/' . $fileinfo->getFilename());
             } else {
                 $noExt = $this->removeExtension($fileinfo->getFilename());
 
