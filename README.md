@@ -101,3 +101,8 @@ Vue template:
 The generated file is an ES6 module.
 
 [Pluralization](http://laravel.com/docs/5.1/localization#pluralization) don't work with vue-i18n
+
+
+# License
+
+Under [MIT](LICENSE)
