@@ -18,7 +18,7 @@ class GeneratorProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app[ 'vue-i18n.generate' ] = $this->app->share(function () {
+        $this->app->singleton('vue-i18n.generate', function () {
             return new Commands\GenerateInclude;
         });
 
