@@ -47,9 +47,8 @@ class Generator
                 continue;
             }
 
-            // Check if the "file" is a subdirectory which has to be scanned.
             if ($fileinfo->isDir()) {
-                // Recursivley iterate through subdirs, until everything was allocated.
+                // Recursivley iterate through subdirs, until everything is allocated.
                 $data[$fileinfo->getFilename()] =
                     $this->allocateLocaleArray($path . '/' . $fileinfo->getFilename());
             } else {
@@ -73,6 +72,10 @@ class Generator
         return $data;
     }
 
+    /**
+     * @param array $arr
+     * @return array
+     */
     private function adjustArray(array $arr)
     {
         $res = [];
@@ -109,6 +112,7 @@ class Generator
     }
 
     /**
+     * Returns filename, with extension stripped
      * @param string $filename
      * @return string
      */
