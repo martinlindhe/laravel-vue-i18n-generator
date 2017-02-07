@@ -54,12 +54,17 @@ class Generator
                     $this->allocateLocaleArray($path . '/' . $fileinfo->getFilename());
             } else {
                 $noExt = $this->removeExtension($fileinfo->getFilename());
+                $fileName = $path . '/' . $fileinfo->getFilename();
 
                 // Ignore non *.php files (ex.: .gitignore, vim swap files etc.)
-                if (pathinfo($fileinfo->getFileName(), PATHINFO_EXTENSION) !== 'php') {
+                if (pathinfo($fileName, PATHINFO_EXTENSION) !== 'php') {
                     continue;
                 }
-                $tmp = include($path . '/' . $fileinfo->getFilename());
+                $tmp = include($fileName);
+                if (gettype($tmp) !== "array") {
+                    throw new Exception('Unexpected data while processing '.$fileName);
+                    continue;
+                }
 
                 $data[$noExt] = $this->adjustArray($tmp);
             }
