@@ -103,7 +103,7 @@ class Generator
         }
 
         return preg_replace_callback(
-            '/(?<!mailto|tel):\w*/',
+            '/(?<!mailto|tel):\w+/',
             function ($matches) {
                 return '{' . mb_substr($matches[0], 1) . '}';
             },
