@@ -43,8 +43,8 @@ class Generator
                 if (pathinfo($fileName, PATHINFO_EXTENSION) !== 'json') {
                     continue;
                 }
-                $tmp = json_decode(file_get_contents($fileinfo->getRealPath()));
-                if (gettype($tmp) !== "object") {
+                $tmp = (array) json_decode(file_get_contents($fileinfo->getRealPath()));
+                if (gettype($tmp) !== "array") {
                     throw new Exception('Unexpected data while processing '.$fileName);
                     continue;
                 }
