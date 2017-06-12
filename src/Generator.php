@@ -18,6 +18,8 @@ class Generator
 
         $locales = [];
         $dir = new DirectoryIterator($path);
+
+        // directories
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot()
                 && $fileinfo->isDir()
@@ -25,6 +27,33 @@ class Generator
             ) {
                 $locales[$fileinfo->getFilename()] =
                     $this->allocateLocaleArray($path . '/' . $fileinfo->getFilename());
+            }
+        }
+
+        // json files
+        foreach ($dir as $fileinfo) {
+            if (!$fileinfo->isDot()
+                && !$fileinfo->isDir()
+                && !in_array($fileinfo->getFilename(), ['vendor'])
+            ) {
+                $noExt = $this->removeExtension($fileinfo->getFilename());
+                $fileName = $path . '/' . $fileinfo->getFilename();
+
+                // Ignore non *.json files (ex.: .gitignore, vim swap files etc.)
+                if (pathinfo($fileName, PATHINFO_EXTENSION) !== 'json') {
+                    continue;
+                }
+                $tmp = json_decode(file_get_contents($fileinfo->getRealPath()));
+                if (gettype($tmp) !== "object") {
+                    throw new Exception('Unexpected data while processing '.$fileName);
+                    continue;
+                }
+
+                if (isset($locales[$noExt])) {
+                    $locales[$noExt] = array_merge($tmp, $locales[$noExt]);
+                } else {
+                    $locales[$noExt] = $tmp;
+                }
             }
         }
 
