@@ -19,46 +19,47 @@ class Generator
         $locales = [];
         $dir = new DirectoryIterator($path);
 
-        // directories
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot()
-                && $fileinfo->isDir()
-                && !in_array($fileinfo->getFilename(), ['vendor'])
-            ) {
-                $locales[$fileinfo->getFilename()] =
-                    $this->allocateLocaleArray($path . '/' . $fileinfo->getFilename());
-            }
-        }
-
-        // json files
-        foreach ($dir as $fileinfo) {
-            if (!$fileinfo->isDot()
-                && !$fileinfo->isDir()
                 && !in_array($fileinfo->getFilename(), ['vendor'])
             ) {
                 $noExt = $this->removeExtension($fileinfo->getFilename());
-                $fileName = $path . '/' . $fileinfo->getFilename();
 
-                // Ignore non *.json files (ex.: .gitignore, vim swap files etc.)
-                if (pathinfo($fileName, PATHINFO_EXTENSION) !== 'json') {
-                    continue;
-                }
-                $tmp = (array) json_decode(file_get_contents($fileinfo->getRealPath()));
-                if (gettype($tmp) !== "array") {
-                    throw new Exception('Unexpected data while processing '.$fileName);
-                    continue;
+                if ($fileinfo->isDir()) {
+                    $local = $this->allocateLocaleArray($fileinfo->getRealPath());
+                } else {
+                    $local = $this->allocateLocaleJSON($fileinfo->getRealPath());
+                    if ($local === null) continue;
                 }
 
                 if (isset($locales[$noExt])) {
-                    $locales[$noExt] = array_merge($tmp, $locales[$noExt]);
+                    $locales[$noExt] = array_merge($local, $locales[$noExt]);
                 } else {
-                    $locales[$noExt] = $tmp;
+                    $locales[$noExt] = $local;
                 }
             }
         }
 
         return 'export default '
             . json_encode($locales, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL;
+    }
+
+    /**
+     * @param string $path
+     * @return array
+     */
+    private function allocateLocaleJSON($path)
+    {
+        // Ignore non *.json files (ex.: .gitignore, vim swap files etc.)
+        if (pathinfo($path, PATHINFO_EXTENSION) !== 'json') {
+            return null;
+        }
+        $tmp = (array) json_decode(file_get_contents($path));
+        if (gettype($tmp) !== "array") {
+            throw new Exception('Unexpected data while processing '.$path);
+        }
+
+        return $tmp;
     }
 
     /**
