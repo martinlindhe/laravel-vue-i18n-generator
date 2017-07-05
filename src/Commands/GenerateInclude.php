@@ -11,7 +11,7 @@ class GenerateInclude extends Command
      *
      * @var string
      */
-    protected $signature = 'vue-i18n:generate';
+    protected $signature = 'vue-i18n:generate {--umd}';
 
     /**
      * The console command description.
@@ -28,8 +28,10 @@ class GenerateInclude extends Command
     {
         $root = base_path() . config('vue-i18n-generator.langPath');
 
+        $umd = $this->option('umd');
+
         $data = (new Generator)
-            ->generateFromPath($root);
+            ->generateFromPath($root, $umd);
 
         $jsFile = base_path() . config('vue-i18n-generator.jsFile');
 

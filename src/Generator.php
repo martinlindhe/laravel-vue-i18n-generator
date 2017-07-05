@@ -7,10 +7,11 @@ class Generator
 {
     /**
      * @param string $path
+     * @param boolean $umd
      * @return string
      * @throws Exception
      */
-    public function generateFromPath($path)
+    public function generateFromPath($path, $umd = null)
     {
         if (!is_dir($path)) {
             throw new Exception('Directory not found: '.$path);
@@ -18,6 +19,7 @@ class Generator
 
         $locales = [];
         $dir = new DirectoryIterator($path);
+        $jsBody = '';
 
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot()
@@ -40,8 +42,15 @@ class Generator
             }
         }
 
-        return 'export default '
-            . json_encode($locales, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL;
+        $jsonLocales = json_encode($locales, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL;
+
+        if(!$umd) {
+            $jsBody  = $this->getES6Module($jsonLocales);
+        } else {
+            $jsBody = $this->getUMDModule($jsonLocales);
+        }
+
+        return $jsBody;
     }
 
     /**
@@ -154,5 +163,34 @@ class Generator
         }
 
         return mb_substr($filename, 0, $pos);
+    }
+
+    /**
+     * Returns an UMD style module
+     * @param string $body
+     * @return string
+     */
+    private function getUMDModule($body)
+    {
+        $js = <<<HEREDOC
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+        typeof define === 'function' && define.amd ? define(factory) :
+            (global.vuei18nLocales = factory());
+}(this, (function () { 'use strict';
+    return {$body}
+})));
+HEREDOC;
+        return $js;
+    }
+
+    /**
+     * Returns an ES6 style module
+     * @param string $body
+     * @return string
+     */
+    private function getES6Module($body)
+    {
+        return "export default {$body}";
     }
 }
