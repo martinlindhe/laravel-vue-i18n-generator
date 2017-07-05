@@ -42,7 +42,7 @@ class Generator
             }
         }
 
-        $jsonLocales = json_encode($locales, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $jsonLocales = json_encode($locales, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL;
 
         if(!$umd) {
             $jsBody  = $this->getES6Module($jsonLocales);
@@ -178,7 +178,7 @@ class Generator
         typeof define === 'function' && define.amd ? define(factory) :
             (global.vuei18nLocales = factory());
 }(this, (function () { 'use strict';
-    return {$body};
+    return {$body}
 })));
 HEREDOC;
         return $js;
@@ -191,6 +191,6 @@ HEREDOC;
      */
     private function getES6Module($body)
     {
-        return "export default {$body};";
+        return "export default {$body}";
     }
 }
