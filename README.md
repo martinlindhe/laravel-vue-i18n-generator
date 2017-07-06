@@ -61,6 +61,29 @@ Vue.use(VueInternationalization, {
 ...
 ```
 
+## UMD module
+
+If you want to generate an UMD style export, you can with the `--umd` option
+```
+php artisan vue-i18n:generate --umd
+```
+An UMD module can be imported into the browser, build system, node and etc. 
+
+Now you can include the generated script in the browser as a normal script and reference it with window.vuei18nLocales.
+```
+<script src="{{ asset('js/vue-i18n-locales.generated.js') }}"></script>
+
+// in your js 
+Vue.use(VueI18n)
+Vue.config.lang = Laravel.language
+Object.keys(window.vuei18nLocales).forEach(function (lang) {
+  Vue.locale(lang, window.vuei18nLocales[lang])
+})
+```
+You can still require/import it in your build system as stated above.
+
+One advantage of doing things like this is you are not obligated to do a build of your javascript each time a the translation files get changed/saved. A good example is if you have a backend that can read and write to your translation files (like Backpack). You can listen to a save event there and call vue-i18n-generator.
+
 
 ## Parameters
 
