@@ -2,6 +2,7 @@
 
 use DirectoryIterator;
 use Exception;
+use App;
 
 class Generator
 {
@@ -80,6 +81,7 @@ class Generator
             ) {
                 $noExt = $this->removeExtension($fileinfo->getFilename());
                 if (!in_array($noExt, $this->availableLocales)) {
+                    App::setLocale($noExt);
                     $this->availableLocales[] = $noExt;
                 }
                 if ($fileinfo->isDir()) {
