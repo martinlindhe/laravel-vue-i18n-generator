@@ -70,7 +70,7 @@ php artisan vue-i18n:generate --umd
 An UMD module can be imported into the browser, build system, node and etc. 
 
 Now you can include the generated script in the browser as a normal script and reference it with window.vuei18nLocales.
-```
+```vue
 <script src="{{ asset('js/vue-i18n-locales.generated.js') }}"></script>
 
 // in your js 
