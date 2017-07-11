@@ -163,15 +163,19 @@ class Generator
                     continue;
                 }
 
-                $root = realpath(base_path() . config('vue-i18n-generator.langPath') . '/' . $lastLocale);
-                $filePath = $this->removeExtension(str_replace('\\', '_', ltrim(str_replace($root, '', realpath($fileName)), '\\')));
+
                 $tmp = include($fileName);
 
                 if (gettype($tmp) !== "array") {
                     throw new Exception('Unexpected data while processing ' . $fileName);
                     continue;
                 }
-                $this->filesToCreate[$filePath][$lastLocale] = $this->adjustArray($tmp);
+                if($lastLocale !== false){
+                    $root = realpath(base_path() . config('vue-i18n-generator.langPath') . '/' . $lastLocale);
+                    $filePath = $this->removeExtension(str_replace('\\', '_', ltrim(str_replace($root, '', realpath($fileName)), '\\')));
+                    $this->filesToCreate[$filePath][$lastLocale] = $this->adjustArray($tmp);
+                }
+
                 $data[$noExt] = $this->adjustArray($tmp);
 
             }
@@ -183,8 +187,7 @@ class Generator
      * @param array $arr
      * @return array
      */
-    private
-    function adjustArray(array $arr)
+    private function adjustArray(array $arr)
     {
         $res = [];
         foreach ($arr as $key => $val) {
@@ -203,8 +206,7 @@ class Generator
      * @param string $s
      * @return string
      */
-    private
-    function adjustString($s)
+    private function adjustString($s)
     {
         if (!is_string($s)) {
             return $s;
@@ -224,8 +226,7 @@ class Generator
      * @param string $filename
      * @return string
      */
-    private
-    function removeExtension($filename)
+    private function removeExtension($filename)
     {
         $pos = mb_strrpos($filename, '.');
         if ($pos === false) {
@@ -240,8 +241,7 @@ class Generator
      * @param string $body
      * @return string
      */
-    private
-    function getUMDModule($body)
+    private function getUMDModule($body)
     {
         $js = <<<HEREDOC
 (function (global, factory) {
@@ -260,8 +260,7 @@ HEREDOC;
      * @param string $body
      * @return string
      */
-    private
-    function getES6Module($body)
+    private function getES6Module($body)
     {
         return "export default {$body}";
     }
