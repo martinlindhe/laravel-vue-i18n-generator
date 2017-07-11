@@ -11,7 +11,7 @@ class GenerateInclude extends Command
      *
      * @var string
      */
-    protected $signature = 'vue-i18n:generate {--umd}';
+    protected $signature = 'vue-i18n:generate {--umd} {--multi}';
 
     /**
      * The console command description.
@@ -30,11 +30,20 @@ class GenerateInclude extends Command
 
         $umd = $this->option('umd');
 
+        $multipleFiles = $this->option('multi');
+
+        if ($multipleFiles) {
+            $files = (new Generator)
+                ->generateMultiple($root, $umd);
+            echo "Written to :" . PHP_EOL . $files . PHP_EOL;
+            exit();
+        }
+
         $data = (new Generator)
             ->generateFromPath($root, $umd);
 
-        $jsFile = base_path() . config('vue-i18n-generator.jsFile');
 
+        $jsFile = base_path() . config('vue-i18n-generator.jsFile');
         file_put_contents($jsFile, $data);
 
         echo "Written to " . $jsFile . PHP_EOL;
