@@ -27,6 +27,27 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
         return $root;
     }
 
+    private function generateLocaleFilesFromJSON(array $arr)
+    {
+        $root = sys_get_temp_dir() . '/' . sha1(microtime(true) . mt_rand());
+
+        if (!is_dir($root)) {
+            mkdir($root, 0777, true);
+        }
+
+        foreach ($arr as $key => $val) {
+
+            if (!is_dir($root . '/' . $key)) {
+                mkdir($root . '/' . $key);
+            }
+
+            $outFile = $root . '/'. $key . '.json';
+            file_put_contents($outFile, json_encode($val));
+        }
+
+        return $root;
+    }
+
     private function destroyLocaleFilesFrom(array $arr, $root)
     {
         foreach ($arr as $key => $val) {
@@ -42,6 +63,27 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
                 rmdir($root . '/' . $key);
             }
 
+        }
+
+        if (is_dir($root)) {
+            rmdir($root);
+        }
+    }
+
+    private function destroyLocaleFilesFromJSON(array $arr, $root)
+    {
+        foreach ($arr as $key => $val) {
+
+            foreach ($val as $group => $content) {
+                $outFile = $root . '/'. $key . '.json';
+                if (file_exists($outFile)) {
+                    unlink($outFile);
+                }
+            }
+
+            if (is_dir($root . '/' . $key)) {
+                rmdir($root . '/' . $key);
+            }
         }
 
         if (is_dir($root)) {
@@ -117,6 +159,23 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
             (new Generator)->generateFromPath($root));
 
         $this->destroyLocaleFilesFrom($arr, $root);
+
+        $root = $this->generateLocaleFilesFromJSON($arr);
+
+        $this->assertEquals(
+            'export default {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "see {link} y {lonk}",' . PHP_EOL
+            . '            "no": {' . PHP_EOL
+            . '                "one": "see {link}"' . PHP_EOL
+            . '            }' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator)->generateFromPath($root));
+
+        $this->destroyLocaleFilesFromJSON($arr, $root);
     }
 
     function testShouldNotTouchHtmlTags()
@@ -144,5 +203,20 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
             (new Generator)->generateFromPath($root));
 
         $this->destroyLocaleFilesFrom($arr, $root);
+
+        $root = $this->generateLocaleFilesFromJSON($arr);
+
+        $this->assertEquals(
+            'export default {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "see <a href=\"mailto:mail@com\">",' . PHP_EOL
+            . '            "no": "see <a href=\"{link}\">"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator)->generateFromPath($root));
+
+        $this->destroyLocaleFilesFromJSON($arr, $root);
     }
 }
