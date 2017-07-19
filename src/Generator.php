@@ -126,12 +126,12 @@ class Generator
         if (pathinfo($path, PATHINFO_EXTENSION) !== 'json') {
             return null;
         }
-        $tmp = (array)json_decode(file_get_contents($path));
+        $tmp = (array)json_decode(file_get_contents($path), true);
         if (gettype($tmp) !== "array") {
             throw new Exception('Unexpected data while processing ' . $path);
         }
 
-        return $tmp;
+        return $this->adjustArray($tmp);
     }
 
     /**
