@@ -111,8 +111,8 @@ class Generator
                 $jsBody = $this->getUMDModule($jsonLocales);
             }
 
-            if (!is_dir($jsPath)) {
-                mkdir($jsPath, 0777, true);
+            if (!is_dir(dirname($fileToCreate))) {
+                mkdir(dirname($fileToCreate), 0777, true);
             }
 
             file_put_contents($fileToCreate, $jsBody);
