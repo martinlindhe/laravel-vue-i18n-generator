@@ -176,10 +176,14 @@ Vue template:
 
 ## Notices
 
-The generated file is an ES6 module.
+- The generated file is an ES6 module.
 
-[Pluralization](http://laravel.com/docs/5.1/localization#pluralization) don't work with vue-i18n
+- One note on [Pluralization](http://laravel.com/docs/5.5/localization#pluralization). This used not to work with vue-i18n but as mentioned at [#12](https://github.com/martinlindhe/laravel-vue-i18n-generator/issues/12)
+they might work since vue-i18n uses the same syntax for separation of singular and plural form as Laravel does. So far this is not confirmed.
 
+  On the other hand it has been tested that pluralization work with vuex-i18n for simple singular / plural forms. However, the 
+  more sophisticated localization as described [here](https://laravel.com/docs/5.5/localization#pluralization) is not supported since
+  vuex-i18n does not support this.
 
 # License
 
