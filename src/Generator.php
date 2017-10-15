@@ -10,6 +10,21 @@ class Generator
     private $availableLocales = [];
     private $filesToCreate = [];
 
+    const VUEX_I18N = 'vuex-i18n';
+    const VUE_I18N = 'vue-i18n';
+
+    private $i18nLib;
+
+    /**
+     * The constructor
+     *
+     * @param string $i18nLib
+     */
+    public function __construct($i18nLib = self::VUE_I18N)
+    {
+        $this->i18nLib = $i18nLib;
+    }
+
     /**
      * @param string $path
      * @param boolean $umd
@@ -207,7 +222,9 @@ class Generator
     }
 
     /**
-     * Turn Laravel style ":link" into vue-i18n style "{link}"
+     * Turn Laravel style ":link" into vue-i18n style "{link}" and
+     * turn Laravel style "|" into vuex-i18n style ":::" when using vuex-i18n.
+     *
      * @param string $s
      * @return string
      */
@@ -215,6 +232,13 @@ class Generator
     {
         if (!is_string($s)) {
             return $s;
+        }
+
+        if ($this->i18nLib === self::VUEX_I18N) {
+            $searchPipePattern = '/(\s)*(\|)(\s)*/';
+            $threeColons = ' ::: ';
+
+            $s = preg_replace($searchPipePattern, $threeColons, $s);
         }
 
         return preg_replace_callback(

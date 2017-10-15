@@ -18,7 +18,7 @@ class GenerateInclude extends Command
      *
      * @var string
      */
-    protected $description = "Generates a vue-i18n compatible js array out of project translations";
+    protected $description = "Generates a vue-i18n|vuex-i18n compatible js array out of project translations";
 
     /**
      * Execute the console command.
@@ -32,15 +32,18 @@ class GenerateInclude extends Command
 
         $multipleFiles = $this->option('multi');
 
+        $i18nLib = config('vue-i18n-generator.i18nLib');
+
         if ($multipleFiles) {
-            $files = (new Generator)
+            $files = (new Generator($i18nLib))
                 ->generateMultiple($root, $umd);
             echo "Written to :" . PHP_EOL . $files . PHP_EOL;
             exit();
         }
 
-        $data = (new Generator)
+        $data = (new Generator($i18nLib))
             ->generateFromPath($root, $umd);
+
 
 
         $jsFile = base_path() . config('vue-i18n-generator.jsFile');

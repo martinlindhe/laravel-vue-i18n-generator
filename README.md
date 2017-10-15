@@ -3,10 +3,10 @@
 
 
 Laravel 5 package that allows you to share your [Laravel localizations](http://laravel.com/docs/5.1/localization)
-with your [vue](http://vuejs.org/) front-end, using [vue-i18n](https://github.com/kazupon/vue-i18n).
+with your [vue](http://vuejs.org/) front-end, using [vue-i18n](https://github.com/kazupon/vue-i18n) or [vuex-i18n](https://github.com/dkfbasel/vuex-i18n).
 
 
-## Usage
+## Install the package
 
 In your project:
 ```composer require martinlindhe/laravel-vue-i18n-generator```
@@ -21,6 +21,20 @@ Next, publish the package default config:
 
 ```
 php artisan vendor:publish --provider="MartinLindhe\VueInternationalizationGenerator\GeneratorProvider"
+```
+
+## Using vue-i18n
+
+Next, you need to install one out of two supported VueJs i18n libraries. We support [vue-i18n](https://github.com/kazupon/vue-i18n) as default library. Beside that we also support [vuex-i18n](https://github.com/dkfbasel/vuex-i18n).
+
+When you go with the default option, you only need to install the library through your favorite package manager.
+### vue-i18n
+```
+npm -i --save vue-i18n
+```
+
+```
+yarn add vue-i18n
 ```
 
 Then generate the include file with
@@ -59,6 +73,47 @@ Vue.use(VueInternationalization, {
 });
 
 ...
+```
+## Using vuex-i18n
+ 
+### vuex-i18n
+```
+npm -i --save vuex-i18n
+```
+
+```
+yarn add vuex-i18n
+```
+
+Next, open `config/vue-i18n-generator.php` and do the following changes:
+
+```php
+- 'i18nLib' => \MartinLindhe\VueInternationalizationGenerator\Generator::VUE_I18N,
++ 'i18nLib' => \MartinLindhe\VueInternationalizationGenerator\Generator::VUEX_I18N,
+```
+
+Then generate the include file with
+```
+php artisan vue-i18n:generate
+```
+
+Assuming you are using a recent version of vuex-i18n, adjust your vue app with something like:
+```js
+import store from './vuex';
+import vuexI18n from 'vuex-i18n';
+Vue.use(vuexI18n.plugin, store);
+
+import Locales from './vue-i18n-locales.generated.js';
+Vue.i18n.add('en', Locales.en);
+Vue.i18n.add('de', Locales.de);
+
+// set the start locale to use
+Vue.i18n.set('en');
+
+const app = new Vue({
+    store, // inject store into all children
+    el: '#app',
+});
 ```
 
 ## UMD module
@@ -121,10 +176,14 @@ Vue template:
 
 ## Notices
 
-The generated file is an ES6 module.
+- The generated file is an ES6 module.
 
-[Pluralization](http://laravel.com/docs/5.1/localization#pluralization) don't work with vue-i18n
+- One note on [Pluralization](http://laravel.com/docs/5.5/localization#pluralization). This used not to work with vue-i18n but as mentioned at [#12](https://github.com/martinlindhe/laravel-vue-i18n-generator/issues/12)
+they might work since vue-i18n uses the same syntax for separation of singular and plural form as Laravel does. So far this is not confirmed.
 
+  On the other hand it has been tested that pluralization work with vuex-i18n for simple singular / plural forms. However, the 
+  more sophisticated localization as described [here](https://laravel.com/docs/5.5/localization#pluralization) is not supported since
+  vuex-i18n does not support this.
 
 # License
 

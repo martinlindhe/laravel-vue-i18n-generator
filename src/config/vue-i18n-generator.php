@@ -24,5 +24,17 @@ return [
     |
     */
     'jsPath' => '/resources/assets/js/langs/',
-    'jsFile' => '/resources/assets/js/vue-i18n-locales.generated.js'
+    'jsFile' => '/resources/assets/js/vue-i18n-locales.generated.js',
+
+    /*
+    |--------------------------------------------------------------------------
+    | i18n library
+    |--------------------------------------------------------------------------
+    |
+    | Specify the library you use for localization.
+    | Options are vue-i18n or vuex-i18n.
+    | You can also use Generator::VUE_I18N or Generator::VUEX_I18N
+    |
+    */
+    'i18nLib' => \MartinLindhe\VueInternationalizationGenerator\Generator::VUE_I18N,
 ];

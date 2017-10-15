@@ -130,6 +130,45 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
         $this->destroyLocaleFilesFrom($arr, $root);
     }
 
+    function testBasicWithVuexLib()
+    {
+        $arr = [
+            'en' => [
+                'help' => [
+                    'yes' => 'yes',
+                    'no' => 'no',
+                ]
+            ],
+            'sv' => [
+                'help' => [
+                    'yes' => 'ja',
+                    'no' => 'nej',
+                ]
+            ]
+        ];
+
+        $root = $this->generateLocaleFilesFrom($arr);
+
+        $this->assertEquals(
+            'export default {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "yes",' . PHP_EOL
+            . '            "no": "no"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    },' . PHP_EOL
+            . '    "sv": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "ja",' . PHP_EOL
+            . '            "no": "nej"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator('vuex-i18n'))->generateFromPath($root));
+
+        $this->destroyLocaleFilesFrom($arr, $root);
+    }
+
     function testNamed()
     {
         $arr = [
@@ -219,4 +258,71 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 
         $this->destroyLocaleFilesFromJSON($arr, $root);
     }
+
+    function testPlurals()
+    {
+        $arr = [
+            'en' => [
+                'plural' => [
+                    'one' => 'There is one apple|There are many apples',
+                    'two' => 'There is one apple | There are many apples',
+                    'three' => 'There is one apple    | There are many apples',
+                    'four' => 'There is one apple |     There are many apples',
+                    'five' => [
+                        'one' => 'There is one apple|There are many apples',
+                        'two' => 'There is one apple | There are many apples',
+                        'three' => 'There is one apple    | There are many apples',
+                        'four' => 'There is one apple |     There are many apples',
+                    ]
+                ]
+            ]
+        ];
+
+        $root = $this->generateLocaleFilesFrom($arr);
+
+        $this->assertEquals(
+            'export default {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "plural": {' . PHP_EOL
+            . '            "one": "There is one apple ::: There are many apples",' . PHP_EOL
+            . '            "two": "There is one apple ::: There are many apples",' . PHP_EOL
+            . '            "three": "There is one apple ::: There are many apples",' . PHP_EOL
+            . '            "four": "There is one apple ::: There are many apples",' . PHP_EOL
+            . '            "five": {' . PHP_EOL
+            . '                "one": "There is one apple ::: There are many apples",' . PHP_EOL
+            . '                "two": "There is one apple ::: There are many apples",' . PHP_EOL
+            . '                "three": "There is one apple ::: There are many apples",' . PHP_EOL
+            . '                "four": "There is one apple ::: There are many apples"' . PHP_EOL
+            . '            }' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator('vuex-i18n'))->generateFromPath($root));
+
+        $this->destroyLocaleFilesFrom($arr, $root);
+
+        $root = $this->generateLocaleFilesFromJSON($arr);
+
+        $this->assertEquals(
+            'export default {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "plural": {' . PHP_EOL
+            . '            "one": "There is one apple ::: There are many apples",' . PHP_EOL
+            . '            "two": "There is one apple ::: There are many apples",' . PHP_EOL
+            . '            "three": "There is one apple ::: There are many apples",' . PHP_EOL
+            . '            "four": "There is one apple ::: There are many apples",' . PHP_EOL
+            . '            "five": {' . PHP_EOL
+            . '                "one": "There is one apple ::: There are many apples",' . PHP_EOL
+            . '                "two": "There is one apple ::: There are many apples",' . PHP_EOL
+            . '                "three": "There is one apple ::: There are many apples",' . PHP_EOL
+            . '                "four": "There is one apple ::: There are many apples"' . PHP_EOL
+            . '            }' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator('vuex-i18n'))->generateFromPath($root));
+
+        $this->destroyLocaleFilesFromJSON($arr, $root);
+    }
+
 }
