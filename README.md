@@ -82,7 +82,7 @@ npm -i --save vuex-i18n
 ```
 
 ```
-yarn add vuex-i18n
+yarn add vuex-i18n vuex
 ```
 
 Next, open `config/vue-i18n-generator.php` and do the following changes:
@@ -99,20 +99,25 @@ php artisan vue-i18n:generate
 
 Assuming you are using a recent version of vuex-i18n, adjust your vue app with something like:
 ```js
-import store from './vuex';
+import Vuex from 'vuex';
 import vuexI18n from 'vuex-i18n';
+import Locales from './vue-i18n-locales.generated.js';
+
+const store = new Vuex.Store();
+
 Vue.use(vuexI18n.plugin, store);
 
-import Locales from './vue-i18n-locales.generated.js';
 Vue.i18n.add('en', Locales.en);
 Vue.i18n.add('de', Locales.de);
 
 // set the start locale to use
-Vue.i18n.set('en');
+Vue.i18n.set(Spark.locale);
 
-const app = new Vue({
-    store, // inject store into all children
-    el: '#app',
+require('./components/bootstrap');
+
+var app = new Vue({
+    store,
+    mixins: [require('spark')]
 });
 ```
 
