@@ -28,6 +28,7 @@ class Generator
     /**
      * @param string $path
      * @param boolean $umd
+     * @param boolean $withVendor
      * @return string
      * @throws Exception
      */
