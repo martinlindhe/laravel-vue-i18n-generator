@@ -31,7 +31,7 @@ class Generator
      * @return string
      * @throws Exception
      */
-    public function generateFromPath($path, $umd = null)
+    public function generateFromPath($path, $umd = null, $withVendor = false)
     {
         if (!is_dir($path)) {
             throw new Exception('Directory not found: ' . $path);
@@ -42,6 +42,10 @@ class Generator
         $jsBody = '';
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot()) {
+                if(!$withVendor && in_array($fileinfo->getFilename(), ['vendor'])) {
+                    continue;
+                }
+
                 $noExt = $this->removeExtension($fileinfo->getFilename());
 
                 if ($fileinfo->isDir()) {

@@ -6,7 +6,7 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 {
     private function generateLocaleFilesFrom(array $arr)
     {
-        $root =  sys_get_temp_dir() . '/' . sha1(microtime(true) . mt_rand());        
+        $root =  __DIR__ . '/tmp/' . sha1(microtime(true) . mt_rand());        
 
         if (!is_dir($root)) {
             mkdir($root, 0777, true);
@@ -105,6 +105,42 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
                     'yes' => 'ja',
                     'no' => 'nej',
                 ]
+            ]
+        ];
+        $root = $this->generateLocaleFilesFrom($arr);
+        $this->assertEquals(
+            'export default {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "yes",' . PHP_EOL
+            . '            "no": "no"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    },' . PHP_EOL
+            . '    "sv": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "ja",' . PHP_EOL
+            . '            "no": "nej"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator)->generateFromPath($root));
+        $this->destroyLocaleFilesFrom($arr, $root);
+    }
+
+    function testBasicWithVendor()
+    {
+        $arr = [
+            'en' => [
+                'help' => [
+                    'yes' => 'yes',
+                    'no' => 'no',
+                ]
+            ],
+            'sv' => [
+                'help' => [
+                    'yes' => 'ja',
+                    'no' => 'nej',
+                ]
             ],
             'vendor' => [
                 'test-vendor' => [
@@ -151,7 +187,7 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
             . '        }' . PHP_EOL
             . '    }' . PHP_EOL
             . '}' . PHP_EOL,
-            (new Generator)->generateFromPath($root));
+            (new Generator)->generateFromPath($root, false, true));
 
         $this->destroyLocaleFilesFrom($arr, $root);
     }
