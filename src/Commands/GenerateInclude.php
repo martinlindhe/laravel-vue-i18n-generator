@@ -11,7 +11,7 @@ class GenerateInclude extends Command
      *
      * @var string
      */
-    protected $signature = 'vue-i18n:generate {--umd} {--multi}';
+    protected $signature = 'vue-i18n:generate {--umd} {--multi} {--with-vendor}';
 
     /**
      * The console command description.
@@ -32,6 +32,8 @@ class GenerateInclude extends Command
 
         $multipleFiles = $this->option('multi');
 
+        $withVendor = $this->option('with-vendor');
+
         $i18nLib = config('vue-i18n-generator.i18nLib');
 
         if ($multipleFiles) {
@@ -42,7 +44,7 @@ class GenerateInclude extends Command
         }
 
         $data = (new Generator($i18nLib))
-            ->generateFromPath($root, $umd);
+            ->generateFromPath($root, $umd, $withVendor);
 
 
 

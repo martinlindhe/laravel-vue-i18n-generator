@@ -107,9 +107,7 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ];
-
         $root = $this->generateLocaleFilesFrom($arr);
-
         $this->assertEquals(
             'export default {' . PHP_EOL
             . '    "en": {' . PHP_EOL
@@ -126,6 +124,70 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
             . '    }' . PHP_EOL
             . '}' . PHP_EOL,
             (new Generator)->generateFromPath($root));
+        $this->destroyLocaleFilesFrom($arr, $root);
+    }
+
+    function testBasicWithVendor()
+    {
+        $arr = [
+            'en' => [
+                'help' => [
+                    'yes' => 'yes',
+                    'no' => 'no',
+                ]
+            ],
+            'sv' => [
+                'help' => [
+                    'yes' => 'ja',
+                    'no' => 'nej',
+                ]
+            ],
+            'vendor' => [
+                'test-vendor' => [
+                    'test-lang' => [
+                        'en' => [
+                            'maybe' => 'maybe'
+                        ],
+                        'sv' => [
+                            'maybe' => 'kanske'
+                        ]
+                    ]
+                ]
+            ],
+        ];
+
+        $root = $this->generateLocaleFilesFrom($arr);
+
+        $this->assertEquals(
+            'export default {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "yes",' . PHP_EOL
+            . '            "no": "no"' . PHP_EOL
+            . '        },' . PHP_EOL
+            . '        "vendor": {' . PHP_EOL
+            . '            "test-vendor": {' . PHP_EOL
+            . '                "test-lang": {' . PHP_EOL
+            . '                    "maybe": "maybe"' . PHP_EOL
+            . '                }' . PHP_EOL
+            . '            }' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    },' . PHP_EOL
+            . '    "sv": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "ja",' . PHP_EOL
+            . '            "no": "nej"' . PHP_EOL
+            . '        },' . PHP_EOL
+            . '        "vendor": {' . PHP_EOL
+            . '            "test-vendor": {' . PHP_EOL
+            . '                "test-lang": {' . PHP_EOL
+            . '                    "maybe": "kanske"' . PHP_EOL
+            . '                }' . PHP_EOL
+            . '            }' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator)->generateFromPath($root, false, true));
 
         $this->destroyLocaleFilesFrom($arr, $root);
     }

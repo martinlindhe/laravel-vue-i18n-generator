@@ -28,10 +28,11 @@ class Generator
     /**
      * @param string $path
      * @param boolean $umd
+     * @param boolean $withVendor
      * @return string
      * @throws Exception
      */
-    public function generateFromPath($path, $umd = null)
+    public function generateFromPath($path, $umd = null, $withVendor = false)
     {
         if (!is_dir($path)) {
             throw new Exception('Directory not found: ' . $path);
@@ -41,9 +42,11 @@ class Generator
         $dir = new DirectoryIterator($path);
         $jsBody = '';
         foreach ($dir as $fileinfo) {
-            if (!$fileinfo->isDot()
-                && !in_array($fileinfo->getFilename(), ['vendor'])
-            ) {
+            if (!$fileinfo->isDot()) {
+                if(!$withVendor && in_array($fileinfo->getFilename(), ['vendor'])) {
+                    continue;
+                }
+
                 $noExt = $this->removeExtension($fileinfo->getFilename());
 
                 if ($fileinfo->isDir()) {
@@ -58,10 +61,10 @@ class Generator
                 } else {
                     $locales[$noExt] = $local;
                 }
-
-
             }
         }
+
+        $locales = $this->adjustVendor($locales);
 
         $jsonLocales = json_encode($locales, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL;
 
@@ -219,6 +222,30 @@ class Generator
             }
         }
         return $res;
+    }
+
+    /**
+     * Adjus vendor index placement.
+     * 
+     * @param array $locales
+     * 
+     * @return array
+     */
+    private function adjustVendor($locales)
+    {
+        if(isset($locales['vendor'])) {
+            foreach($locales['vendor'] as $vendor => $data) {
+                foreach($data as $key => $group) {
+                    foreach($group as $locale => $lang) {
+                        $locales[$locale]['vendor'][$vendor][$key] = $lang;
+                    }
+                }
+            }
+
+            unset($locales['vendor']);
+        }
+
+        return $locales;
     }
 
     /**
