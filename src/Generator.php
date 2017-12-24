@@ -237,7 +237,7 @@ class Generator
             foreach($locales['vendor'] as $vendor => $data) {
                 foreach($data as $key => $group) {
                     foreach($group as $locale => $lang) {
-                        $locales[$locale]['vendor'][$vendor][$key] = $lang;
+                        $locales[$key]['vendor'][$vendor][$locale] = $lang;
                     }
                 }
             }
