@@ -7,7 +7,7 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
     private function generateLocaleFilesFrom(array $arr)
     {
         $root = sys_get_temp_dir() . '/' . sha1(microtime(true) . mt_rand());
-
+        
         if (!is_dir($root)) {
             mkdir($root, 0777, true);
         }
@@ -144,11 +144,13 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
             ],
             'vendor' => [
                 'test-vendor' => [
-                    'test-lang' => [
-                        'en' => [
+                    'en' => [
+                        'test-lang' => [
                             'maybe' => 'maybe'
-                        ],
-                        'sv' => [
+                        ]
+                    ],
+                    'sv' => [
+                        'test-lang' => [
                             'maybe' => 'kanske'
                         ]
                     ]
