@@ -30,7 +30,7 @@ Next, you need to install one out of two supported VueJs i18n libraries. We supp
 When you go with the default option, you only need to install the library through your favorite package manager.
 ### vue-i18n
 ```
-npm -i --save vue-i18n
+npm i --save vue-i18n
 ```
 
 ```
