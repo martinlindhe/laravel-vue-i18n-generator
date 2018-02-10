@@ -67,7 +67,12 @@ class Generator
         $locales = $this->adjustVendor($locales);
 
         $jsonLocales = json_encode($locales, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL;
-
+        
+        if(json_last_error() !== JSON_ERROR_NONE)
+        {
+            throw new Exception('Could not generate JSON, error code '.json_last_error());
+        }
+        
         if (!$umd) {
             $jsBody = $this->getES6Module($jsonLocales);
         } else {
@@ -122,7 +127,10 @@ class Generator
             $fileToCreate = $jsPath . $fileName . '.js';
             $createdFiles .= $fileToCreate . PHP_EOL;
             $jsonLocales = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL;
-
+            if(json_last_error() !== JSON_ERROR_NONE)
+            {
+                throw new Exception('Could not generate JSON, error code '.json_last_error());
+            }
             if (!$umd) {
                 $jsBody = $this->getES6Module($jsonLocales);
             } else {
