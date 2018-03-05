@@ -39,7 +39,7 @@ class GeneratorProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(Generator::class, function ($app) {
+        $this->app->singleton('vue-i18n.generate', function ($app) {
             return new Generator($app['config']['vue-i18n-generator']);
         });
     }
