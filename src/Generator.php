@@ -203,7 +203,7 @@ class Generator
                     continue;
                 }
 
-                if (!is_null($this->config['langFiles']) && !empty($this->config['langFiles']) && !in_array($noExt, $this->config['langFiles'])) {
+                if (isset($this->config['langFiles']) && !empty($this->config['langFiles']) && !in_array($noExt, $this->config['langFiles'])) {
                     continue;
                 }
 
