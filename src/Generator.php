@@ -6,6 +6,7 @@ use App;
 
 class Generator
 {
+    private $config;
 
     private $availableLocales = [];
     private $filesToCreate = [];
@@ -13,16 +14,17 @@ class Generator
     const VUEX_I18N = 'vuex-i18n';
     const VUE_I18N = 'vue-i18n';
 
-    private $i18nLib;
-
     /**
      * The constructor
      *
-     * @param string $i18nLib
+     * @param array $config
      */
-    public function __construct($i18nLib = self::VUE_I18N)
+    public function __construct($config = [])
     {
-        $this->i18nLib = $i18nLib;
+        if (!isset($config['i18nLib'])) {
+            $config['i18nLib'] = self::VUE_I18N;
+        }
+        $this->config = $config;
     }
 
     /**
@@ -39,6 +41,7 @@ class Generator
         }
 
         $locales = [];
+        $files = [];
         $dir = new DirectoryIterator($path);
         $jsBody = '';
         foreach ($dir as $fileinfo) {
@@ -47,20 +50,27 @@ class Generator
                     continue;
                 }
 
-                $noExt = $this->removeExtension($fileinfo->getFilename());
+                $files[] = $fileinfo->getRealPath();
+            }
+        }
+        asort($files);
 
-                if ($fileinfo->isDir()) {
-                    $local = $this->allocateLocaleArray($fileinfo->getRealPath());
-                } else {
-                    $local = $this->allocateLocaleJSON($fileinfo->getRealPath());
-                    if ($local === null) continue;
-                }
+        foreach ($files as $fileName) {
+            $fileinfo = new \SplFileInfo($fileName);
 
-                if (isset($locales[$noExt])) {
-                    $locales[$noExt] = array_merge($local, $locales[$noExt]);
-                } else {
-                    $locales[$noExt] = $local;
-                }
+            $noExt = $this->removeExtension($fileinfo->getFilename());
+
+            if ($fileinfo->isDir()) {
+                $local = $this->allocateLocaleArray($fileinfo->getRealPath());
+            } else {
+                $local = $this->allocateLocaleJSON($fileinfo->getRealPath());
+                if ($local === null) continue;
+            }
+
+            if (isset($locales[$noExt])) {
+                $locales[$noExt] = array_merge($local, $locales[$noExt]);
+            } else {
+                $locales[$noExt] = $local;
             }
         }
 
@@ -92,7 +102,7 @@ class Generator
         if (!is_dir($path)) {
             throw new Exception('Directory not found: ' . $path);
         }
-        $jsPath = base_path() . config('vue-i18n-generator.jsPath');
+        $jsPath = base_path() . $this->config['jsPath'];
         $locales = [];
         $fileToCreate = '';
         $createdFiles = '';
@@ -183,8 +193,7 @@ class Generator
             if ($fileinfo->isDir()) {
                 // Recursivley iterate through subdirs, until everything is allocated.
 
-                $data[$fileinfo->getFilename()] =
-                    $this->allocateLocaleArray($path . '/' . $fileinfo->getFilename());
+                $data[$fileinfo->getFilename()] = $this->allocateLocaleArray($path . '/' . $fileinfo->getFilename());
             } else {
                 $noExt = $this->removeExtension($fileinfo->getFilename());
                 $fileName = $path . '/' . $fileinfo->getFilename();
@@ -194,8 +203,7 @@ class Generator
                     continue;
                 }
 
-                $langFiles = config('vue-i18n-generator.langFiles');
-                if(! is_null($langFiles) && ! empty($langFiles) && ! in_array($noExt, $langFiles)) {
+                if (!empty($langFiles) && !in_array($noExt, $langFiles)) {
                     continue;
                 }
 
@@ -205,8 +213,8 @@ class Generator
                     throw new Exception('Unexpected data while processing ' . $fileName);
                     continue;
                 }
-                if($lastLocale !== false){
-                    $root = realpath(base_path() . config('vue-i18n-generator.langPath') . '/' . $lastLocale);
+                if ($lastLocale !== false) {
+                    $root = realpath(base_path() . $this->config['langPath'] . '/' . $lastLocale);
                     $filePath = $this->removeExtension(str_replace('\\', '_', ltrim(str_replace($root, '', realpath($fileName)), '\\')));
                     $this->filesToCreate[$filePath][$lastLocale] = $this->adjustArray($tmp);
                 }
@@ -261,8 +269,7 @@ class Generator
     }
 
     /**
-     * Turn Laravel style ":link" into vue-i18n style "{link}" and
-     * turn Laravel style "|" into vuex-i18n style ":::" when using vuex-i18n.
+     * Turn Laravel style ":link" into vue-i18n style "{link}" or vuex-i18n style ":::".
      *
      * @param string $s
      * @return string
@@ -273,10 +280,9 @@ class Generator
             return $s;
         }
 
-        if ($this->i18nLib === self::VUEX_I18N) {
+        if ($this->config['i18nLib'] === self::VUEX_I18N) {
             $searchPipePattern = '/(\s)*(\|)(\s)*/';
             $threeColons = ' ::: ';
-
             $s = preg_replace($searchPipePattern, $threeColons, $s);
         }
 

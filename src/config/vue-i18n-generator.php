@@ -49,8 +49,7 @@ return [
     |
     | Specify the library you use for localization.
     | Options are vue-i18n or vuex-i18n.
-    | You can also use Generator::VUE_I18N or Generator::VUEX_I18N
     |
     */
-    'i18nLib' => \MartinLindhe\VueInternationalizationGenerator\Generator::VUE_I18N,
+    'i18nLib' => 'vue-i18n',
 ];

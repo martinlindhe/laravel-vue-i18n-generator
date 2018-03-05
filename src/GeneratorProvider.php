@@ -18,10 +18,6 @@ class GeneratorProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->singleton('vue-i18n.generate', function () {
-            return new Commands\GenerateInclude;
-        });
-
         $this->commands(
             'vue-i18n.generate'
         );
@@ -43,6 +39,9 @@ class GeneratorProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->singleton(Generator::class, function ($app) {
+            return new Generator($app['config']['vue-i18n-generator']);
+        });
     }
 
     /**

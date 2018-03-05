@@ -87,9 +87,9 @@ yarn add vuex-i18n vuex
 
 Next, open `config/vue-i18n-generator.php` and do the following changes:
 
-```php
-- 'i18nLib' => \MartinLindhe\VueInternationalizationGenerator\Generator::VUE_I18N,
-+ 'i18nLib' => \MartinLindhe\VueInternationalizationGenerator\Generator::VUEX_I18N,
+```diff
+- 'i18nLib' => 'vue-i18n',
++ 'i18nLib' => 'vuex-i18n',
 ```
 
 Then generate the include file with
@@ -183,12 +183,7 @@ Vue template:
 
 - The generated file is an ES6 module.
 
-- One note on [Pluralization](http://laravel.com/docs/5.5/localization#pluralization). This used not to work with vue-i18n but as mentioned at [#12](https://github.com/martinlindhe/laravel-vue-i18n-generator/issues/12)
-they might work since vue-i18n uses the same syntax for separation of singular and plural form as Laravel does. So far this is not confirmed.
-
-  On the other hand it has been tested that pluralization work with vuex-i18n for simple singular / plural forms. However, the 
-  more sophisticated localization as described [here](https://laravel.com/docs/5.5/localization#pluralization) is not supported since
-  vuex-i18n does not support this.
+The more sophisticated pluralization localization as described [here](https://laravel.com/docs/5.5/localization#pluralization) is not supported since neither vue-i18n or vuex-i18n support this.
 
 # License
 
