@@ -27,26 +27,22 @@ class GenerateInclude extends Command
     public function handle()
     {
         $root = base_path() . config('vue-i18n-generator.langPath');
+        $config = config('vue-i18n-generator');
 
+        // options
         $umd = $this->option('umd');
-
         $multipleFiles = $this->option('multi');
-
         $withVendor = $this->option('with-vendor');
 
-        $i18nLib = config('vue-i18n-generator.i18nLib');
-
         if ($multipleFiles) {
-            $files = (new Generator($i18nLib))
+            $files = (new Generator($config))
                 ->generateMultiple($root, $umd);
             echo "Written to :" . PHP_EOL . $files . PHP_EOL;
             exit();
         }
 
-        $data = (new Generator($i18nLib))
+        $data = (new Generator($config))
             ->generateFromPath($root, $umd, $withVendor);
-
-
 
         $jsFile = base_path() . config('vue-i18n-generator.jsFile');
         file_put_contents($jsFile, $data);
