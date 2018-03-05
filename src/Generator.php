@@ -194,6 +194,10 @@ class Generator
                     continue;
                 }
 
+                $langFiles = config('vue-i18n-generator.langFiles');
+                if(! is_null($langFiles) && ! empty($langFiles) && ! in_array($noExt, $langFiles)) {
+                    continue;
+                }
 
                 $tmp = include($fileName);
 

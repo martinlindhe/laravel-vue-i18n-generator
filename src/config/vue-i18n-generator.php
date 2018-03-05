@@ -13,6 +13,22 @@ return [
 
     'langPath' => '/resources/lang',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Laravel translation files
+    |--------------------------------------------------------------------------
+    |
+    | You can choose which translation files to be generated.
+    | Note: leave this empty for all the translation files to be generated.
+    |
+    */
+
+    'langFiles' => [
+        /*
+        'pagination',
+        'passwords'
+        */
+    ],
 
     /*
     |--------------------------------------------------------------------------
