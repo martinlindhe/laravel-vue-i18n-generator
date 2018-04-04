@@ -42,13 +42,38 @@ Then generate the include file with
 php artisan vue-i18n:generate
 ```
 
-Assuming you are using a recent version of vue-i18n, adjust your vue app with something like:
+Assuming you are using a recent version of vue-i18n (>=6.x), adjust your vue app with something like:
 ```js
 import Vue from 'vue';
-import VueInternalization from 'vue-i18n';
+import VueInternationalization from 'vue-i18n';
+import Locale from './vue-i18n-locales.generated';
+
+Vue.use(VueInternationalization);
+
+const lang = document.documentElement.lang.substr(0, 2); 
+// or however you determine your current app locale
+
+const i18n = new VueInternationalization({
+    locale: lang,
+    messages: Locale
+});
+
+const app = new Vue({
+    el: '#app',
+    i18n,
+    components: {
+       ...
+    }
+}
+```
+
+For older vue-i18n (5.x), the initialization looks something like:
+```js
+import Vue from 'vue';
+import VueInternationalization from 'vue-i18n';
 import Locales from './vue-i18n-locales.generated.js';
 
-Vue.use(VueInternalization);
+Vue.use(VueInternationalization);
 
 Vue.config.lang = 'en';
 
@@ -60,20 +85,8 @@ Object.keys(Locales).forEach(function (lang) {
 ```
 
 
-For older vue-i18n, the initialization looks something like:
 
-```js
-import Vue from 'vue';
-import VueInternationalization from 'vue-i18n';
-import Locales from './vue-i18n-locales.generated.js';
 
-Vue.use(VueInternationalization, {
-    lang: 'en',
-    locales: Locales
-});
-
-...
-```
 ## Using vuex-i18n
  
 ### vuex-i18n
