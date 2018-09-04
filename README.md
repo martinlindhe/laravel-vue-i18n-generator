@@ -91,7 +91,7 @@ Object.keys(Locales).forEach(function (lang) {
  
 ### vuex-i18n
 ```
-npm -i --save vuex-i18n
+npm i --save vuex-i18n
 ```
 
 ```
