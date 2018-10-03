@@ -52,4 +52,15 @@ return [
     |
     */
     'i18nLib' => 'vue-i18n',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Output messages
+    |--------------------------------------------------------------------------
+    |
+    | Specify if the library should show "written to" messages
+    | after generating json files.
+    |
+    */
+    'showOutputMessages' => false,
 ];

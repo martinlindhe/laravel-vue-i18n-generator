@@ -6,6 +6,11 @@ Laravel 5 package that allows you to share your [Laravel localizations](http://l
 with your [vue](http://vuejs.org/) front-end, using [vue-i18n](https://github.com/kazupon/vue-i18n) or [vuex-i18n](https://github.com/dkfbasel/vuex-i18n).
 
 
+## Laravel 5.7 notice!
+
+Configuration paths have changed in Laravel 5.7, in order for this package to function properly you need to configure correct paths for jsPath and jsFile in your `config\vue-i18n-generator.php`.
+
+
 ## Install the package
 
 In your project:
@@ -91,7 +96,7 @@ Object.keys(Locales).forEach(function (lang) {
  
 ### vuex-i18n
 ```
-npm -i --save vuex-i18n
+npm i --save vuex-i18n
 ```
 
 ```

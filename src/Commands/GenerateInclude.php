@@ -37,7 +37,11 @@ class GenerateInclude extends Command
         if ($multipleFiles) {
             $files = (new Generator($config))
                 ->generateMultiple($root, $umd);
-            echo "Written to :" . PHP_EOL . $files . PHP_EOL;
+
+            if ($config['showOutputMessages']) {
+                echo "Written to :" . PHP_EOL . $files . PHP_EOL;
+            }
+
             exit();
         }
 
@@ -47,6 +51,8 @@ class GenerateInclude extends Command
         $jsFile = base_path() . config('vue-i18n-generator.jsFile');
         file_put_contents($jsFile, $data);
 
-        echo "Written to " . $jsFile . PHP_EOL;
+        if ($config['showOutputMessages']) {
+            echo "Written to " . $jsFile . PHP_EOL;
+        }
     }
 }
