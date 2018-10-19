@@ -234,6 +234,7 @@ class Generator
     {
         $res = [];
         foreach ($arr as $key => $val) {
+            $key = $this->adjustString($key);
 
             if (is_string($val)) {
                 $res[$key] = $this->adjustString($val);
