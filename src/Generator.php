@@ -59,6 +59,9 @@ class Generator
             $fileinfo = new \SplFileInfo($fileName);
 
             $noExt = $this->removeExtension($fileinfo->getFilename());
+            if (class_exists('App')) {
+                App::setLocale($noExt);
+            }
 
             if ($fileinfo->isDir()) {
                 $local = $this->allocateLocaleArray($fileinfo->getRealPath());
@@ -113,8 +116,10 @@ class Generator
                 && !in_array($fileinfo->getFilename(), ['vendor'])
             ) {
                 $noExt = $this->removeExtension($fileinfo->getFilename());
-                if (!in_array($noExt, $this->availableLocales)) {
+                if (class_exists('App')) {
                     App::setLocale($noExt);
+                }
+                if (!in_array($noExt, $this->availableLocales)) {
                     $this->availableLocales[] = $noExt;
                 }
                 if ($fileinfo->isDir()) {
