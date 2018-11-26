@@ -76,7 +76,7 @@ class Generator
 
         $locales = $this->adjustVendor($locales);
 
-        $jsonLocales = json_encode($locales, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL;
+        $jsonLocales = json_encode($locales, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL;
         
         if(json_last_error() !== JSON_ERROR_NONE)
         {
@@ -136,7 +136,7 @@ class Generator
         foreach ($this->filesToCreate as $fileName => $data) {
             $fileToCreate = $jsPath . $fileName . '.js';
             $createdFiles .= $fileToCreate . PHP_EOL;
-            $jsonLocales = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL;
+            $jsonLocales = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL;
             if(json_last_error() !== JSON_ERROR_NONE)
             {
                 throw new Exception('Could not generate JSON, error code '.json_last_error());
