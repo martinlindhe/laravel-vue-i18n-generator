@@ -208,7 +208,9 @@ class Generator
                     continue;
                 }
 
-                if (isset($this->config['langFiles']) && !empty($this->config['langFiles']) && !in_array($noExt, $this->config['langFiles'])) {
+                if ((isset($this->config['langFiles']) && !empty($this->config['langFiles']) && !in_array($noExt, $this->config['langFiles']))
+                    || (isset($this->config['excludes']) && in_array($noExt, $this->config['excludes']))
+                ) {
                     continue;
                 }
 
