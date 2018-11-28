@@ -39,10 +39,10 @@ class GenerateInclude extends Command
                 ->generateMultiple($root, $umd);
 
             if ($config['showOutputMessages']) {
-                echo "Written to :" . PHP_EOL . $files . PHP_EOL;
+                $this->info("Written to : ".$files);
             }
 
-            exit();
+            return;
         }
 
         $data = (new Generator($config))
@@ -52,7 +52,7 @@ class GenerateInclude extends Command
         file_put_contents($jsFile, $data);
 
         if ($config['showOutputMessages']) {
-            echo "Written to " . $jsFile . PHP_EOL;
+            $this->info("Written to : ".$jsFile);
         }
     }
 }
