@@ -10,6 +10,7 @@ class Generator
 
     private $availableLocales = [];
     private $filesToCreate = [];
+    private $langFiles;
 
     const VUEX_I18N = 'vuex-i18n';
     const VUE_I18N = 'vue-i18n';
@@ -34,11 +35,13 @@ class Generator
      * @return string
      * @throws Exception
      */
-    public function generateFromPath($path, $umd = null, $withVendor = false)
+    public function generateFromPath($path, $umd = null, $withVendor = false, $langFiles = [])
     {
         if (!is_dir($path)) {
             throw new Exception('Directory not found: ' . $path);
         }
+
+        $this->langFiles = $langFiles;
 
         $locales = [];
         $files = [];
@@ -208,9 +211,7 @@ class Generator
                     continue;
                 }
 
-                if ((isset($this->config['langFiles']) && !empty($this->config['langFiles']) && !in_array($noExt, $this->config['langFiles']))
-                    || (isset($this->config['excludes']) && in_array($noExt, $this->config['excludes']))
-                ) {
+                if ($this->shouldIgnoreLangFile($noExt)) {
                     continue;
                 }
 
@@ -231,6 +232,21 @@ class Generator
             }
         }
         return $data;
+    }
+
+    /**
+     * @param string $noExt
+     * @return boolean
+     */
+    private function shouldIgnoreLangFile(string $noExt)
+    {
+        // langFiles passed by option have priority
+        if (isset($this->langFiles) && !empty($this->langFiles)) {
+            return !in_array($noExt, $this->langFiles);
+        }
+
+        return (isset($this->config['langFiles']) && !empty($this->config['langFiles']) && !in_array($noExt, $this->config['langFiles']))
+                    || (isset($this->config['excludes']) && in_array($noExt, $this->config['excludes']));
     }
 
     /**

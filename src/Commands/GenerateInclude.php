@@ -11,7 +11,7 @@ class GenerateInclude extends Command
      *
      * @var string
      */
-    protected $signature = 'vue-i18n:generate {--umd} {--multi} {--with-vendor} {--file-name=}';
+    protected $signature = 'vue-i18n:generate {--umd} {--multi} {--with-vendor} {--file-name=} {--lang-files=}';
 
     /**
      * The console command description.
@@ -34,6 +34,7 @@ class GenerateInclude extends Command
         $multipleFiles = $this->option('multi');
         $withVendor = $this->option('with-vendor');
         $fileName = $this->option('file-name');
+        $langFiles = $this->option('lang-files');
 
         if ($multipleFiles) {
             $files = (new Generator($config))
@@ -46,8 +47,12 @@ class GenerateInclude extends Command
             return;
         }
 
+        if ($langFiles) {
+            $langFiles = explode(',', $langFiles);
+        }
+
         $data = (new Generator($config))
-            ->generateFromPath($root, $umd, $withVendor);
+            ->generateFromPath($root, $umd, $withVendor, $langFiles);
 
 
         $jsFile = $this->getFileName($fileName);
