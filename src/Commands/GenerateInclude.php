@@ -64,10 +64,10 @@ class GenerateInclude extends Command
     }
 
     /**
-     * @param ?string $fileNameOption
+     * @param string $fileNameOption
      * @return string
      */
-    private function getFileName(?string $fileNameOption)
+    private function getFileName($fileNameOption)
     {
         if (isset($fileNameOption)) {
             return base_path() . $fileNameOption;

@@ -238,7 +238,7 @@ class Generator
      * @param string $noExt
      * @return boolean
      */
-    private function shouldIgnoreLangFile(string $noExt)
+    private function shouldIgnoreLangFile($noExt)
     {
         // langFiles passed by option have priority
         if (isset($this->langFiles) && !empty($this->langFiles)) {
