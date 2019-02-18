@@ -30,12 +30,12 @@ class Generator
 
     /**
      * @param string $path
-     * @param boolean $umd
+     * @param string $format
      * @param boolean $withVendor
      * @return string
      * @throws Exception
      */
-    public function generateFromPath($path, $umd = null, $withVendor = false, $langFiles = [])
+    public function generateFromPath($path, $format = 'es6', $withVendor = false, $langFiles = [])
     {
         if (!is_dir($path)) {
             throw new Exception('Directory not found: ' . $path);
@@ -83,27 +83,31 @@ class Generator
         $locales = $this->adjustVendor($locales);
 
         $jsonLocales = json_encode($locales, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL;
-        
+
         if(json_last_error() !== JSON_ERROR_NONE)
         {
             throw new Exception('Could not generate JSON, error code '.json_last_error());
         }
-        
-        if (!$umd) {
+
+        // formats other than 'es6' and 'umd' will become plain JSON
+        if ($format === 'es6') {
             $jsBody = $this->getES6Module($jsonLocales);
-        } else {
+        } elseif($format === 'umd') {
             $jsBody = $this->getUMDModule($jsonLocales);
+        } else {
+            $jsBody = $jsonLocales;
         }
+
         return $jsBody;
     }
 
     /**
      * @param string $path
-     * @param boolean $umd
+     * @param string $format
      * @return string
      * @throws Exception
      */
-    public function generateMultiple($path, $umd = null)
+    public function generateMultiple($path, $format = 'es6')
     {
         if (!is_dir($path)) {
             throw new Exception('Directory not found: ' . $path);
@@ -149,10 +153,12 @@ class Generator
             {
                 throw new Exception('Could not generate JSON, error code '.json_last_error());
             }
-            if (!$umd) {
+            if ($format === 'es6') {
                 $jsBody = $this->getES6Module($jsonLocales);
-            } else {
+            } elseif($format === 'umd') {
                 $jsBody = $this->getUMDModule($jsonLocales);
+            } else {
+                $jsBody = $jsonLocales;
             }
 
             if (!is_dir(dirname($fileToCreate))) {
@@ -270,9 +276,9 @@ class Generator
 
     /**
      * Adjus vendor index placement.
-     * 
+     *
      * @param array $locales
-     * 
+     *
      * @return array
      */
     private function adjustVendor($locales)
