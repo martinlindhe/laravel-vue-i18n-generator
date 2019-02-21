@@ -11,7 +11,7 @@ class GenerateInclude extends Command
      *
      * @var string
      */
-    protected $signature = 'vue-i18n:generate {--umd} {--multi} {--with-vendor} {--file-name=} {--lang-files=}';
+    protected $signature = 'vue-i18n:generate {--umd} {--multi} {--with-vendor} {--file-name=} {--lang-files=} {--format=es6}';
 
     /**
      * The console command description.
@@ -23,6 +23,7 @@ class GenerateInclude extends Command
     /**
      * Execute the console command.
      * @return mixed
+     * @throws \Exception
      */
     public function handle()
     {
@@ -35,13 +36,23 @@ class GenerateInclude extends Command
         $withVendor = $this->option('with-vendor');
         $fileName = $this->option('file-name');
         $langFiles = $this->option('lang-files');
+        $format = $this->option('format');
+
+        if ($umd) {
+            // if the --umd option is set, set the $format to 'umd'
+            $format = 'umd';
+        }
+
+        if (!$this->isValidFormat($format)) {
+            throw new \RuntimeException('Invalid format passed: ' . $format);
+        }
 
         if ($multipleFiles) {
             $files = (new Generator($config))
-                ->generateMultiple($root, $umd);
+                ->generateMultiple($root, $format);
 
             if ($config['showOutputMessages']) {
-                $this->info("Written to : ".$files);
+                $this->info("Written to : " . $files);
             }
 
             return;
@@ -52,14 +63,14 @@ class GenerateInclude extends Command
         }
 
         $data = (new Generator($config))
-            ->generateFromPath($root, $umd, $withVendor, $langFiles);
+            ->generateFromPath($root, $format, $withVendor, $langFiles);
 
 
         $jsFile = $this->getFileName($fileName);
         file_put_contents($jsFile, $data);
 
         if ($config['showOutputMessages']) {
-            $this->info("Written to : ".$jsFile);
+            $this->info("Written to : " . $jsFile);
         }
     }
 
@@ -73,6 +84,16 @@ class GenerateInclude extends Command
             return base_path() . $fileNameOption;
         }
 
-         return base_path() . config('vue-i18n-generator.jsFile');
+        return base_path() . config('vue-i18n-generator.jsFile');
+    }
+
+    /**
+     * @param string $format
+     * @return boolean
+     */
+    private function isValidFormat($format)
+    {
+        $supportedFormats = ['es6', 'umd', 'json'];
+        return in_array($format, $supportedFormats);
     }
 }

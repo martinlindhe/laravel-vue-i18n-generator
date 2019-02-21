@@ -139,11 +139,18 @@ var app = new Vue({
 });
 ```
 
-## UMD module
+## Output Formats
 
-If you want to generate an UMD style export, you can with the `--umd` option
+You can specify the output formats from `es6`, `umd`, or `json` with the `--format` option. (defaults to `es6`)
+
 ```
-php artisan vue-i18n:generate --umd
+php artisan vue-i18n:generate --format {es6,umd,json}
+```
+
+### Use case example for UMD module
+
+```
+php artisan vue-i18n:generate --format umd
 ```
 An UMD module can be imported into the browser, build system, node and etc. 
 

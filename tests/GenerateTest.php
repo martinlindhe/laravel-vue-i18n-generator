@@ -86,6 +86,143 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
         $this->destroyLocaleFilesFrom($arr, $root);
     }
 
+    function testBasicES6Format()
+    {
+        $format = 'es6';
+
+        $arr = [
+            'en' => [
+                'help' => [
+                    'yes' => 'yes',
+                    'no' => 'no',
+                ]
+            ],
+            'sv' => [
+                'help' => [
+                    'yes' => 'ja',
+                    'no' => 'nej',
+                ]
+            ]
+        ];
+
+        $root = $this->generateLocaleFilesFrom($arr);
+        $this->assertEquals(
+            'export default {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "yes",' . PHP_EOL
+            . '            "no": "no"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    },' . PHP_EOL
+            . '    "sv": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "ja",' . PHP_EOL
+            . '            "no": "nej"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator([]))->generateFromPath($root, $format));
+        $this->destroyLocaleFilesFrom($arr, $root);
+    }
+
+    function testBasicWithUMDFormat()
+    {
+        $format = 'umd';
+        $arr = [
+            'en' => [
+                'help' => [
+                    'yes' => 'yes',
+                    'no' => 'no',
+                ]
+            ],
+            'sv' => [
+                'help' => [
+                    'yes' => 'ja',
+                    'no' => 'nej',
+                ]
+            ]
+        ];
+
+        $root = $this->generateLocaleFilesFrom($arr);
+        $this->assertEquals(
+            '(function (global, factory) {' . PHP_EOL
+            . '    typeof exports === \'object\' && typeof module !== \'undefined\' ? module.exports = factory() :' . PHP_EOL
+            . '        typeof define === \'function\' && define.amd ? define(factory) :' . PHP_EOL
+            . '            (global.vuei18nLocales = factory());' . PHP_EOL
+            . '}(this, (function () { \'use strict\';' . PHP_EOL
+            . '    return {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "yes",' . PHP_EOL
+            . '            "no": "no"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    },' . PHP_EOL
+            . '    "sv": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "ja",' . PHP_EOL
+            . '            "no": "nej"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL
+            . PHP_EOL
+            . '})));',
+            (new Generator([]))->generateFromPath($root, $format));
+        $this->destroyLocaleFilesFrom($arr, $root);
+    }
+
+    function testBasicWithJSONFormat()
+    {
+        $format = 'json';
+        $arr = [
+            'en' => [
+                'help' => [
+                    'yes' => 'yes',
+                    'no' => 'no',
+                ]
+            ],
+            'sv' => [
+                'help' => [
+                    'yes' => 'ja',
+                    'no' => 'nej',
+                ]
+            ]
+        ];
+
+        $root = $this->generateLocaleFilesFrom($arr);
+        $this->assertEquals(
+            '{' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "yes",' . PHP_EOL
+            . '            "no": "no"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    },' . PHP_EOL
+            . '    "sv": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "ja",' . PHP_EOL
+            . '            "no": "nej"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator([]))->generateFromPath($root, $format));
+        $this->destroyLocaleFilesFrom($arr, $root);
+    }
+
+    function testInvalidFormat()
+    {
+        $format = 'es5';
+        $arr = [];
+
+        $root = $this->generateLocaleFilesFrom($arr);
+        try {
+            (new Generator([]))->generateFromPath($root, $format);
+        } catch(RuntimeException $e) {
+            $this->assertEquals('Invalid format passed: ' . $format, $e->getMessage());
+
+        }
+        $this->destroyLocaleFilesFrom($arr, $root);
+    }
+
     function testBasicWithTranslationString()
     {
         $arr = [
@@ -171,7 +308,7 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
             . '        }' . PHP_EOL
             . '    }' . PHP_EOL
             . '}' . PHP_EOL,
-            (new Generator([]))->generateFromPath($root, false, true));
+            (new Generator([]))->generateFromPath($root, 'es6', true));
 
         $this->destroyLocaleFilesFrom($arr, $root);
     }
