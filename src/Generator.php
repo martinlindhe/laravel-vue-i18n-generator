@@ -1,8 +1,8 @@
 <?php namespace MartinLindhe\VueInternationalizationGenerator;
 
-use DirectoryIterator;
-use Exception;
 use App;
+use Exception;
+use DirectoryIterator;
 
 class Generator
 {
@@ -46,7 +46,7 @@ class Generator
         $jsBody = '';
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot()) {
-                if(!$withVendor && in_array($fileinfo->getFilename(), ['vendor'])) {
+                if (!$withVendor && in_array($fileinfo->getFilename(), ['vendor'])) {
                     continue;
                 }
 
@@ -64,7 +64,9 @@ class Generator
                 $local = $this->allocateLocaleArray($fileinfo->getRealPath());
             } else {
                 $local = $this->allocateLocaleJSON($fileinfo->getRealPath());
-                if ($local === null) continue;
+                if ($local === null) {
+                    continue;
+                }
             }
 
             if (isset($locales[$noExt])) {
@@ -78,8 +80,7 @@ class Generator
 
         $jsonLocales = json_encode($locales, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL;
         
-        if(json_last_error() !== JSON_ERROR_NONE)
-        {
+        if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception('Could not generate JSON, error code '.json_last_error());
         }
         
@@ -121,7 +122,9 @@ class Generator
                     $local = $this->allocateLocaleArray($fileinfo->getRealPath());
                 } else {
                     $local = $this->allocateLocaleJSON($fileinfo->getRealPath());
-                    if ($local === null) continue;
+                    if ($local === null) {
+                        continue;
+                    }
                 }
 
                 if (isset($locales[$noExt])) {
@@ -129,16 +132,13 @@ class Generator
                 } else {
                     $locales[$noExt] = $local;
                 }
-
-
             }
         }
         foreach ($this->filesToCreate as $fileName => $data) {
             $fileToCreate = $jsPath . $fileName . '.js';
             $createdFiles .= $fileToCreate . PHP_EOL;
             $jsonLocales = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL;
-            if(json_last_error() !== JSON_ERROR_NONE)
-            {
+            if (json_last_error() !== JSON_ERROR_NONE) {
                 throw new Exception('Could not generate JSON, error code '.json_last_error());
             }
             if (!$umd) {
@@ -220,7 +220,6 @@ class Generator
                 }
 
                 $data[$noExt] = $this->adjustArray($tmp);
-
             }
         }
         return $data;
@@ -234,7 +233,6 @@ class Generator
     {
         $res = [];
         foreach ($arr as $key => $val) {
-
             if (is_string($val)) {
                 $res[$key] = $this->adjustString($val);
             } else {
@@ -246,17 +244,17 @@ class Generator
 
     /**
      * Adjus vendor index placement.
-     * 
+     *
      * @param array $locales
-     * 
+     *
      * @return array
      */
     private function adjustVendor($locales)
     {
-        if(isset($locales['vendor'])) {
-            foreach($locales['vendor'] as $vendor => $data) {
-                foreach($data as $key => $group) {
-                    foreach($group as $locale => $lang) {
+        if (isset($locales['vendor'])) {
+            foreach ($locales['vendor'] as $vendor => $data) {
+                foreach ($data as $key => $group) {
+                    foreach ($group as $locale => $lang) {
                         $locales[$key]['vendor'][$vendor][$locale] = $lang;
                     }
                 }
