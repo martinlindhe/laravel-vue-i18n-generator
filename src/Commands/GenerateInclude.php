@@ -11,7 +11,7 @@ class GenerateInclude extends Command
      *
      * @var string
      */
-    protected $signature = 'vue-i18n:generate {--umd} {--multi} {--with-vendor} {--file-name=} {--lang-files=} {--format=es6}';
+    protected $signature = 'vue-i18n:generate {--umd} {--multi} {--with-vendor} {--file-name=} {--lang-files=} {--format=es6} {--multi-locales}';
 
     /**
      * The console command description.
@@ -37,6 +37,7 @@ class GenerateInclude extends Command
         $fileName = $this->option('file-name');
         $langFiles = $this->option('lang-files');
         $format = $this->option('format');
+        $multipleLocales = $this->option('multi-locales');
 
         if ($umd) {
             // if the --umd option is set, set the $format to 'umd'
@@ -47,9 +48,9 @@ class GenerateInclude extends Command
             throw new \RuntimeException('Invalid format passed: ' . $format);
         }
 
-        if ($multipleFiles) {
+        if ($multipleFiles || $multipleLocales) {
             $files = (new Generator($config))
-                ->generateMultiple($root, $format);
+                ->generateMultiple($root, $format, $multipleLocales);
 
             if ($config['showOutputMessages']) {
                 $this->info("Written to : " . $files);

@@ -91,15 +91,14 @@ class Generator
 
         $jsonLocales = json_encode($locales, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL;
 
-        if(json_last_error() !== JSON_ERROR_NONE)
-        {
+        if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception('Could not generate JSON, error code '.json_last_error());
         }
 
         // formats other than 'es6' and 'umd' will become plain JSON
         if ($format === 'es6') {
             $jsBody = $this->getES6Module($jsonLocales);
-        } elseif($format === 'umd') {
+        } elseif ($format === 'umd') {
             $jsBody = $this->getUMDModule($jsonLocales);
         } else {
             $jsBody = $jsonLocales;
@@ -114,7 +113,7 @@ class Generator
      * @return string
      * @throws Exception
      */
-    public function generateMultiple($path, $format = 'es6')
+    public function generateMultiple($path, $format = 'es6', $multiLocales = false)
     {
         if (!is_dir($path)) {
             throw new Exception('Directory not found: ' . $path);
@@ -139,7 +138,7 @@ class Generator
                         $this->availableLocales[] = $noExt;
                     }
                     if ($fileinfo->isDir()) {
-                        $local = $this->allocateLocaleArray($fileinfo->getRealPath());
+                        $local = $this->allocateLocaleArray($fileinfo->getRealPath(), $multiLocales);
                     } else {
                         $local = $this->allocateLocaleJSON($fileinfo->getRealPath());
                         if ($local === null) continue;
@@ -157,13 +156,12 @@ class Generator
             $fileToCreate = $jsPath . $fileName . '.js';
             $createdFiles .= $fileToCreate . PHP_EOL;
             $jsonLocales = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL;
-            if(json_last_error() !== JSON_ERROR_NONE)
-            {
+            if (json_last_error() !== JSON_ERROR_NONE) {
                 throw new Exception('Could not generate JSON, error code '.json_last_error());
             }
             if ($format === 'es6') {
                 $jsBody = $this->getES6Module($jsonLocales);
-            } elseif($format === 'umd') {
+            } elseif ($format === 'umd') {
                 $jsBody = $this->getUMDModule($jsonLocales);
             } else {
                 $jsBody = $jsonLocales;
@@ -201,7 +199,7 @@ class Generator
      * @param string $path
      * @return array
      */
-    private function allocateLocaleArray($path)
+    private function allocateLocaleArray($path, $multiLocales = false)
     {
         $data = [];
         $dir = new DirectoryIterator($path);
@@ -238,11 +236,14 @@ class Generator
                 if ($lastLocale !== false) {
                     $root = realpath(base_path() . $this->config['langPath'] . '/' . $lastLocale);
                     $filePath = $this->removeExtension(str_replace('\\', '_', ltrim(str_replace($root, '', realpath($fileName)), '\\')));
-                    $this->filesToCreate[$filePath][$lastLocale] = $this->adjustArray($tmp);
+                    if ($multiLocales) {
+                        $this->filesToCreate[$lastLocale][$lastLocale][substr($filePath, 1)] = $this->adjustArray($tmp);
+                    } else {
+                        $this->filesToCreate[$filePath][$lastLocale] = $this->adjustArray($tmp);
+                    }
                 }
 
                 $data[$noExt] = $this->adjustArray($tmp);
-
             }
         }
         return $data;
@@ -291,10 +292,10 @@ class Generator
      */
     private function adjustVendor($locales)
     {
-        if(isset($locales['vendor'])) {
-            foreach($locales['vendor'] as $vendor => $data) {
-                foreach($data as $key => $group) {
-                    foreach($group as $locale => $lang) {
+        if (isset($locales['vendor'])) {
+            foreach ($locales['vendor'] as $vendor => $data) {
+                foreach ($data as $key => $group) {
+                    foreach ($group as $locale => $lang) {
                         $locales[$key]['vendor'][$vendor][$locale] = $lang;
                     }
                 }

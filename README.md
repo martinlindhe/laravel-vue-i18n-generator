@@ -55,7 +55,7 @@ import Locale from './vue-i18n-locales.generated';
 
 Vue.use(VueInternationalization);
 
-const lang = document.documentElement.lang.substr(0, 2); 
+const lang = document.documentElement.lang.substr(0, 2);
 // or however you determine your current app locale
 
 const i18n = new VueInternationalization({
@@ -93,7 +93,7 @@ Object.keys(Locales).forEach(function (lang) {
 
 
 ## Using vuex-i18n
- 
+
 ### vuex-i18n
 ```
 npm i --save vuex-i18n
@@ -152,13 +152,13 @@ php artisan vue-i18n:generate --format {es6,umd,json}
 ```
 php artisan vue-i18n:generate --format umd
 ```
-An UMD module can be imported into the browser, build system, node and etc. 
+An UMD module can be imported into the browser, build system, node and etc.
 
 Now you can include the generated script in the browser as a normal script and reference it with window.vuei18nLocales.
 ```vue
 <script src="{{ asset('js/vue-i18n-locales.generated.js') }}"></script>
 
-// in your js 
+// in your js
 Vue.use(VueI18n)
 Vue.config.lang = Laravel.language
 Object.keys(window.vuei18nLocales).forEach(function (lang) {
@@ -169,12 +169,23 @@ You can still require/import it in your build system as stated above.
 
 One advantage of doing things like this is you are not obligated to do a build of your javascript each time a the translation files get changed/saved. A good example is if you have a backend that can read and write to your translation files (like Backpack). You can listen to a save event there and call vue-i18n-generator.
 
+## Generating Multiple Files
+
+Sometimes you may want to generate multiple files as you want to make use of lazy loading. As such, you can specify that the generator produces multiple files within the destination directory.
+
+There are two options:
+1. One file per laravel module language file using switch ```--multi```
+2. One file per locale using switch ```--multi-locales```
+
+```
+php artisan vue-i18n:generate --multi{-locales}
+```
 
 ## Parameters
 
 The generator adjusts the strings in order to work with vue-i18n's named formatting,
 so you can reuse your Laravel translations with parameters.
- 
+
 resource/lang/message.php:
 ```php
 return [
