@@ -25,6 +25,9 @@ class Generator
         if (!isset($config['i18nLib'])) {
             $config['i18nLib'] = self::VUE_I18N;
         }
+        if (!isset($config['excludes'])) {
+            $config['excludes'] = [];
+        }
         $this->config = $config;
     }
 
@@ -49,7 +52,9 @@ class Generator
         $jsBody = '';
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot()) {
-                if(!$withVendor && in_array($fileinfo->getFilename(), ['vendor'])) {
+                if(!$withVendor
+                    && in_array($fileinfo->getFilename(), array_merge(['vendor'], $this->config['excludes']))
+                ) {
                     continue;
                 }
 
@@ -62,21 +67,23 @@ class Generator
             $fileinfo = new \SplFileInfo($fileName);
 
             $noExt = $this->removeExtension($fileinfo->getFilename());
-            if (class_exists('App')) {
-                App::setLocale($noExt);
-            }
+            if ($noExt !== '') {
+                if (class_exists('App')) {
+                    App::setLocale($noExt);
+                }
 
-            if ($fileinfo->isDir()) {
-                $local = $this->allocateLocaleArray($fileinfo->getRealPath());
-            } else {
-                $local = $this->allocateLocaleJSON($fileinfo->getRealPath());
-                if ($local === null) continue;
-            }
+                if ($fileinfo->isDir()) {
+                    $local = $this->allocateLocaleArray($fileinfo->getRealPath());
+                } else {
+                    $local = $this->allocateLocaleJSON($fileinfo->getRealPath());
+                    if ($local === null) continue;
+                }
 
-            if (isset($locales[$noExt])) {
-                $locales[$noExt] = array_merge($local, $locales[$noExt]);
-            } else {
-                $locales[$noExt] = $local;
+                if (isset($locales[$noExt])) {
+                    $locales[$noExt] = array_merge($local, $locales[$noExt]);
+                } else {
+                    $locales[$noExt] = $local;
+                }
             }
         }
 
@@ -120,29 +127,30 @@ class Generator
         $jsBody = '';
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot()
-                && !in_array($fileinfo->getFilename(), ['vendor'])
+                && !in_array($fileinfo->getFilename(), array_merge(['vendor'], $this->config['excludes']))
+                && $fileinfo !== ''
             ) {
                 $noExt = $this->removeExtension($fileinfo->getFilename());
-                if (class_exists('App')) {
-                    App::setLocale($noExt);
-                }
-                if (!in_array($noExt, $this->availableLocales)) {
-                    $this->availableLocales[] = $noExt;
-                }
-                if ($fileinfo->isDir()) {
-                    $local = $this->allocateLocaleArray($fileinfo->getRealPath());
-                } else {
-                    $local = $this->allocateLocaleJSON($fileinfo->getRealPath());
-                    if ($local === null) continue;
-                }
+                if ($noExt !== '') {
+                    if (class_exists('App')) {
+                        App::setLocale($noExt);
+                    }
+                    if (!in_array($noExt, $this->availableLocales)) {
+                        $this->availableLocales[] = $noExt;
+                    }
+                    if ($fileinfo->isDir()) {
+                        $local = $this->allocateLocaleArray($fileinfo->getRealPath());
+                    } else {
+                        $local = $this->allocateLocaleJSON($fileinfo->getRealPath());
+                        if ($local === null) continue;
+                    }
 
-                if (isset($locales[$noExt])) {
-                    $locales[$noExt] = array_merge($local, $locales[$noExt]);
-                } else {
-                    $locales[$noExt] = $local;
+                    if (isset($locales[$noExt])) {
+                        $locales[$noExt] = array_merge($local, $locales[$noExt]);
+                    } else {
+                        $locales[$noExt] = $local;
+                    }
                 }
-
-
             }
         }
         foreach ($this->filesToCreate as $fileName => $data) {

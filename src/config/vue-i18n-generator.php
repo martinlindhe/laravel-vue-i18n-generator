@@ -32,15 +32,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Excluded files
+    | Excluded files & folders
     |--------------------------------------------------------------------------
     |
-    | Exclude translation files you don't need.
+    | Exclude translation files, generic files or folders you don't need.
     |
     */
     'excludes' => [
         /*
         'validation',
+        'example.file',
+        'example-folder',
         */
     ],
 
