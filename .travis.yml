@@ -1,12 +1,12 @@
 language: php
-sudo: false
-dist: trusty
+
+os:
+  - windows
+  - linux
 
 php:
-  - 5.5
   - 5.6
-  - 7.0
-  - 7.1
+  - 7.3
 
 script:
   - vendor/phpunit/phpunit/phpunit
