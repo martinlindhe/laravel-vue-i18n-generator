@@ -235,7 +235,10 @@ class Generator
                 }
                 if ($lastLocale !== false) {
                     $root = realpath(base_path() . $this->config['langPath'] . DIRECTORY_SEPARATOR . $lastLocale);
-                    $filePath = $this->removeExtension(str_replace(DIRECTORY_SEPARATOR, '_', ltrim(str_replace($root, '', realpath($fileName)), DIRECTORY_SEPARATOR)));
+                    $filePath = $this->removeExtension(str_replace('\\', '_', ltrim(str_replace($root, '', realpath($fileName)), '\\')));
+                    if($filePath[0] === DIRECTORY_SEPARATOR) {
+                        $filePath = substr($filePath, 1);
+                    }
                     if ($multiLocales) {
                         $this->filesToCreate[$lastLocale][$lastLocale][$filePath] = $this->adjustArray($tmp);
                     } else {
