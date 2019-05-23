@@ -213,10 +213,10 @@ class Generator
             if ($fileinfo->isDir()) {
                 // Recursivley iterate through subdirs, until everything is allocated.
 
-                $data[$fileinfo->getFilename()] = $this->allocateLocaleArray($path . '/' . $fileinfo->getFilename());
+                $data[$fileinfo->getFilename()] = $this->allocateLocaleArray($path . DIRECTORY_SEPARATOR . $fileinfo->getFilename());
             } else {
                 $noExt = $this->removeExtension($fileinfo->getFilename());
-                $fileName = $path . '/' . $fileinfo->getFilename();
+                $fileName = $path . DIRECTORY_SEPARATOR . $fileinfo->getFilename();
 
                 // Ignore non *.php files (ex.: .gitignore, vim swap files etc.)
                 if (pathinfo($fileName, PATHINFO_EXTENSION) !== 'php') {
@@ -234,10 +234,13 @@ class Generator
                     continue;
                 }
                 if ($lastLocale !== false) {
-                    $root = realpath(base_path() . $this->config['langPath'] . '/' . $lastLocale);
+                    $root = realpath(base_path() . $this->config['langPath'] . DIRECTORY_SEPARATOR . $lastLocale);
                     $filePath = $this->removeExtension(str_replace('\\', '_', ltrim(str_replace($root, '', realpath($fileName)), '\\')));
+                    if($filePath[0] === DIRECTORY_SEPARATOR) {
+                        $filePath = substr($filePath, 1);
+                    }
                     if ($multiLocales) {
-                        $this->filesToCreate[$lastLocale][$lastLocale][substr($filePath, 1)] = $this->adjustArray($tmp);
+                        $this->filesToCreate[$lastLocale][$lastLocale][$filePath] = $this->adjustArray($tmp);
                     } else {
                         $this->filesToCreate[$filePath][$lastLocale] = $this->adjustArray($tmp);
                     }
