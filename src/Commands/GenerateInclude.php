@@ -50,7 +50,7 @@ class GenerateInclude extends Command
 
         if ($multipleFiles || $multipleLocales) {
             $files = (new Generator($config))
-                ->generateMultiple($root, $format, $multipleLocales);
+                ->generateMultiple($root, $format);
 
             if ($config['showOutputMessages']) {
                 $this->info("Written to : " . $files);

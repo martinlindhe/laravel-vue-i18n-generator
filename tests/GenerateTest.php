@@ -4,13 +4,22 @@ use MartinLindhe\VueInternationalizationGenerator\Generator;
 
 class GenerateTest extends \PHPUnit_Framework_TestCase
 {
-    private function generateLocaleFilesFrom(array $arr)
+    /**
+     * @return string
+     */
+    private function getRootDir()
     {
         $root = sys_get_temp_dir() . '/' . sha1(microtime(true) . mt_rand());
-        
+
         if (!is_dir($root)) {
             mkdir($root, 0777, true);
         }
+        return $root;
+    }
+
+    private function generateLocaleFilesFrom(array $arr, $root = null)
+    {
+        $root = $root ?: $this->getRootDir();
 
         foreach ($arr as $key => $val) {
 
@@ -27,6 +36,18 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
         return $root;
     }
 
+    private function generateJsonLocaleFilesFrom(array $arr, $root = null)
+    {
+        $root = $root ?: $this->getRootDir();
+
+        foreach ($arr as $lang => $data) {
+            $outFile = $root . '/' . $lang . '.json';
+            file_put_contents($outFile, json_encode($data));
+        }
+
+        return $root;
+    }
+
     private function destroyLocaleFilesFrom(array $arr, $root)
     {
         foreach ($arr as $key => $val) {
@@ -36,6 +57,11 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
                 if (file_exists($outFile)) {
                     unlink($outFile);
                 }
+            }
+
+            $jsonFile = $root . '/'. $key . '.json';
+            if (file_exists($jsonFile)) {
+                unlink($jsonFile);
             }
 
             if (is_dir($root . '/' . $key)) {
@@ -67,6 +93,43 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
         ];
 
         $root = $this->generateLocaleFilesFrom($arr);
+        $this->assertEquals(
+            'export default {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "yes",' . PHP_EOL
+            . '            "no": "no"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    },' . PHP_EOL
+            . '    "sv": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "ja",' . PHP_EOL
+            . '            "no": "nej"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator([]))->generateFromPath($root));
+        $this->destroyLocaleFilesFrom($arr, $root);
+    }
+
+    function testBasicJsonFiles()
+    {
+        $arr = [
+            'en' => [
+                'help' => [
+                    'yes' => 'yes',
+                    'no' => 'no',
+                ]
+            ],
+            'sv' => [
+                'help' => [
+                    'yes' => 'ja',
+                    'no' => 'nej',
+                ]
+            ]
+        ];
+
+        $root = $this->generateJsonLocaleFilesFrom($arr);
         $this->assertEquals(
             'export default {' . PHP_EOL
             . '    "en": {' . PHP_EOL
@@ -543,5 +606,56 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
             (new Generator(['i18nLib' => 'vuex-i18n']))->generateFromPath($root));
 
         $this->destroyLocaleFilesFrom($arr, $root);
+    }
+
+    function testBothJsonAndPhpFiles()
+    {
+        $root = $this->getRootDir();
+        $jsonArr = [
+            'en' => [
+                'help' => [
+                    'no' => 'no',
+                ]
+            ],
+            'sv' => [
+                'help' => [
+                    'no' => 'nej',
+                ]
+            ]
+        ];
+        $this->generateJsonLocaleFilesFrom($jsonArr, $root);
+
+        $phpArr = [
+            'en' => [
+                'help' => [
+                    'yes' => 'yes',
+                ]
+            ],
+            'sv' => [
+                'help' => [
+                    'yes' => 'ja',
+                ]
+            ]
+        ];
+        $this->generateLocaleFilesFrom($phpArr, $root);
+
+        $this->assertEquals(
+            'export default {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "no": "no",' . PHP_EOL
+            . '            "yes": "yes"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    },' . PHP_EOL
+            . '    "sv": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "no": "nej",' . PHP_EOL
+            . '            "yes": "ja"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator([]))->generateFromPath($root));
+
+        $this->destroyLocaleFilesFrom($jsonArr, $root);
     }
 }
