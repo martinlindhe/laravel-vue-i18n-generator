@@ -246,6 +246,31 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
         $this->destroyLocaleFilesFrom($arr, $root);
     }
 
+    function testBasicWithEscapedTranslationString()
+    {
+        $arr = [
+            'en' => [
+                'main' => [
+                    'hello :name' => 'Hello :name',
+                    'time test 10!:00' => 'Time test 10!:00',
+                ]
+            ],
+        ];
+
+        $root = $this->generateLocaleFilesFrom($arr);
+        $this->assertEquals(
+            'export default {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "main": {' . PHP_EOL
+            . '            "hello {name}": "Hello {name}",' . PHP_EOL
+            . '            "time test 10:00": "Time test 10:00"' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator([]))->generateFromPath($root));
+        $this->destroyLocaleFilesFrom($arr, $root);
+    }
+
     function testBasicWithVendor()
     {
         $arr = [
@@ -375,6 +400,62 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
             . '            "no": {' . PHP_EOL
             . '                "one": "see {link}"' . PHP_EOL
             . '            }' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator([]))->generateFromPath($root));
+
+        $this->destroyLocaleFilesFrom($arr, $root);
+    }
+
+    function testNamedWithEscaped()
+    {
+        $arr = [
+            'en' => [
+                'help' => [
+                    'yes' => 'see :link y :lonk at 08!:00',
+                    'no' => [
+                        'one' => 'see :link',
+                    ]
+                ]
+            ]
+        ];
+
+        $root = $this->generateLocaleFilesFrom($arr);
+
+        $this->assertEquals(
+            'export default {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "yes": "see {link} y {lonk} at 08:00",' . PHP_EOL
+            . '            "no": {' . PHP_EOL
+            . '                "one": "see {link}"' . PHP_EOL
+            . '            }' . PHP_EOL
+            . '        }' . PHP_EOL
+            . '    }' . PHP_EOL
+            . '}' . PHP_EOL,
+            (new Generator([]))->generateFromPath($root));
+
+        $this->destroyLocaleFilesFrom($arr, $root);
+    }
+
+    function testEscapedEscapeCharacter()
+    {
+        $arr = [
+            'en' => [
+                'help' => [
+                    'test escaped' => 'escaped escape char not !!:touched',
+                ]
+            ]
+        ];
+
+        $root = $this->generateLocaleFilesFrom($arr);
+
+        $this->assertEquals(
+            'export default {' . PHP_EOL
+            . '    "en": {' . PHP_EOL
+            . '        "help": {' . PHP_EOL
+            . '            "test escaped": "escaped escape char not !:touched"' . PHP_EOL
             . '        }' . PHP_EOL
             . '    }' . PHP_EOL
             . '}' . PHP_EOL,
