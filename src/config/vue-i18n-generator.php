@@ -79,4 +79,15 @@ return [
     |
     */
     'showOutputMessages' => false,
+
+    /*
+   |--------------------------------------------------------------------------
+   | Escape character
+   |--------------------------------------------------------------------------
+   |
+   | Allows to escape translations strings that should not be treated as a
+   | variable
+   |
+   */
+    'escape_char' => '!',
 ];

@@ -14,6 +14,7 @@ class Generator
 
     const VUEX_I18N = 'vuex-i18n';
     const VUE_I18N = 'vue-i18n';
+    const ESCAPE_CHAR = '!';
 
     /**
      * The constructor
@@ -27,6 +28,9 @@ class Generator
         }
         if (!isset($config['excludes'])) {
             $config['excludes'] = [];
+        }
+        if (!isset($config['escape_char'])) {
+            $config['escape_char'] = self::ESCAPE_CHAR;
         }
         $this->config = $config;
     }
@@ -275,10 +279,10 @@ class Generator
     {
         $res = [];
         foreach ($arr as $key => $val) {
-            $key = $this->adjustString($key);
+            $key = $this->removeEscapeCharacter($this->adjustString($key));
 
             if (is_string($val)) {
-                $res[$key] = $this->adjustString($val);
+                $res[$key] = $this->removeEscapeCharacter($this->adjustString($val));
             } else {
                 $res[$key] = $this->adjustArray($val);
             }
@@ -287,7 +291,7 @@ class Generator
     }
 
     /**
-     * Adjus vendor index placement.
+     * Adjust vendor index placement.
      *
      * @param array $locales
      *
@@ -328,10 +332,30 @@ class Generator
             $s = preg_replace($searchPipePattern, $threeColons, $s);
         }
 
+        $escaped_escape_char = preg_quote($this->config['escape_char'], '/');
         return preg_replace_callback(
-            '/(?<!mailto|tel):\w+/',
+            "/(?<!mailto|tel|{$escaped_escape_char}):\w+/",
             function ($matches) {
                 return '{' . mb_substr($matches[0], 1) . '}';
+            },
+            $s
+        );
+    }
+
+    /**
+     * Removes escape character if translation string contains sequence that looks like
+     * Laravel style ":link", but should not be interpreted as such and was therefore escaped.
+     *
+     * @param string $s
+     * @return string
+     */
+    private function removeEscapeCharacter($s)
+    {
+        $escaped_escape_char = preg_quote($this->config['escape_char'], '/');
+        return preg_replace_callback(
+            "/{$escaped_escape_char}(:\w+)/",
+            function ($matches) {
+                return mb_substr($matches[0], 1);
             },
             $s
         );
