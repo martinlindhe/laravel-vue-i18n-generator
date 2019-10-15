@@ -16,7 +16,7 @@ Configuration paths have changed in Laravel 5.7, in order for this package to fu
 In your project:
 ```composer require martinlindhe/laravel-vue-i18n-generator --dev```
 
-For Laravel 5.4 and below:
+### For Laravel 5.4 and below:
 For older versions of the framework:
 
 Register the service provider in ```config/app.php```
