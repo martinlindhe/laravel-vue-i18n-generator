@@ -211,7 +211,7 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
             '(function (global, factory) {' . PHP_EOL
             . '    typeof exports === \'object\' && typeof module !== \'undefined\' ? module.exports = factory() :' . PHP_EOL
             . '        typeof define === \'function\' && define.amd ? define(factory) :' . PHP_EOL
-            . '            (global.vuei18nLocales = factory());' . PHP_EOL
+            . '            typeof global.vuei18nLocales === \'undefined\' ? global.vuei18nLocales = factory() : Object.keys(factory()).forEach(function (key) {global.vuei18nLocales[key] = factory()[key]});' . PHP_EOL
             . '}(this, (function () { \'use strict\';' . PHP_EOL
             . '    return {' . PHP_EOL
             . '    "en": {' . PHP_EOL
