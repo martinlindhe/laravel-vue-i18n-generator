@@ -3,6 +3,7 @@
 use DirectoryIterator;
 use Exception;
 use App;
+use Traversable;
 
 class Generator
 {
@@ -251,7 +252,7 @@ class Generator
         foreach ($arr as $key => $val) {
             $key = $this->removeEscapeCharacter($this->adjustString($key));
 
-            if (is_iterable($val)) {
+            if (is_array($val)) {
                 $res[$key] = $this->adjustArray($val);
             } else {
                 $res[$key] = $this->removeEscapeCharacter($this->adjustString($val));
