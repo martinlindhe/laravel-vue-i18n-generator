@@ -251,10 +251,10 @@ class Generator
         foreach ($arr as $key => $val) {
             $key = $this->removeEscapeCharacter($this->adjustString($key));
 
-            if (is_string($val)) {
-                $res[$key] = $this->removeEscapeCharacter($this->adjustString($val));
-            } else {
+            if (is_iterable($val)) {
                 $res[$key] = $this->adjustArray($val);
+            } else {
+                $res[$key] = $this->removeEscapeCharacter($this->adjustString($val));
             }
         }
         return $res;
