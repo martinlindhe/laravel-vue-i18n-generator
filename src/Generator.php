@@ -84,7 +84,7 @@ class Generator
                 }
 
                 if (isset($locales[$noExt])) {
-                    $locales[$noExt] = array_merge_recursive($local, $locales[$noExt]);
+                    $locales[$noExt] = array_merge($local, $locales[$noExt]);
                 } else {
                     $locales[$noExt] = $local;
                 }
@@ -93,7 +93,22 @@ class Generator
 
         $locales = $this->adjustVendor($locales);
 
-        return $this->encodeJson($locales, $format);
+        $jsonLocales = json_encode($locales, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL;
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception('Could not generate JSON, error code '.json_last_error());
+        }
+
+        // formats other than 'es6' and 'umd' will become plain JSON
+        if ($format === 'es6') {
+            $jsBody = $this->getES6Module($jsonLocales);
+        } elseif ($format === 'umd') {
+            $jsBody = $this->getUMDModule($jsonLocales);
+        } else {
+            $jsBody = $jsonLocales;
+        }
+
+        return $jsBody;
     }
 
     /**
@@ -102,7 +117,7 @@ class Generator
      * @return string
      * @throws Exception
      */
-    public function generateMultiple($path, $format = 'es6')
+    public function generateMultiple($path, $format = 'es6', $multiLocales = false)
     {
         if (!is_dir($path)) {
             throw new Exception('Directory not found: ' . $path);
@@ -127,7 +142,7 @@ class Generator
                         $this->availableLocales[] = $noExt;
                     }
                     if ($fileinfo->isDir()) {
-                        $local = $this->allocateLocaleArray($fileinfo->getRealPath());
+                        $local = $this->allocateLocaleArray($fileinfo->getRealPath(), $multiLocales);
                     } else {
                         $local = $this->allocateLocaleJSON($fileinfo->getRealPath());
                         if ($local === null) continue;
@@ -141,10 +156,20 @@ class Generator
                 }
             }
         }
-        foreach ($locales as $fileName => $data) {
+        foreach ($this->filesToCreate as $fileName => $data) {
             $fileToCreate = $jsPath . $fileName . '.js';
             $createdFiles .= $fileToCreate . PHP_EOL;
-            $jsBody = $this->encodeJson([$fileName => $data], $format);
+            $jsonLocales = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL;
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception('Could not generate JSON, error code '.json_last_error());
+            }
+            if ($format === 'es6') {
+                $jsBody = $this->getES6Module($jsonLocales);
+            } elseif ($format === 'umd') {
+                $jsBody = $this->getUMDModule($jsonLocales);
+            } else {
+                $jsBody = $jsonLocales;
+            }
 
             if (!is_dir(dirname($fileToCreate))) {
                 mkdir(dirname($fileToCreate), 0777, true);
@@ -178,7 +203,7 @@ class Generator
      * @param string $path
      * @return array
      */
-    private function allocateLocaleArray($path)
+    private function allocateLocaleArray($path, $multiLocales = false)
     {
         $data = [];
         $dir = new DirectoryIterator($path);
@@ -217,6 +242,11 @@ class Generator
                     $filePath = $this->removeExtension(str_replace('\\', '_', ltrim(str_replace($root, '', realpath($fileName)), '\\')));
                     if($filePath[0] === DIRECTORY_SEPARATOR) {
                         $filePath = substr($filePath, 1);
+                    }
+                    if ($multiLocales) {
+                        $this->filesToCreate[$lastLocale][$lastLocale][$filePath] = $this->adjustArray($tmp);
+                    } else {
+                        $this->filesToCreate[$filePath][$lastLocale] = $this->adjustArray($tmp);
                     }
                 }
 
@@ -373,20 +403,5 @@ HEREDOC;
     private function getES6Module($body)
     {
         return "export default {$body}";
-    }
-
-    private function encodeJson($data, $format = 'es6')
-    {
-        $jsonLocales = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL;
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception('Could not generate JSON, error code '.json_last_error());
-        }
-        if ($format === 'es6') {
-            return $this->getES6Module($jsonLocales);
-        } elseif ($format === 'umd') {
-            return $this->getUMDModule($jsonLocales);
-        }
-
-        return $jsonLocales;
     }
 }
