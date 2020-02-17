@@ -129,31 +129,39 @@ class Generator
         $createdFiles = '';
         $dir = new DirectoryIterator($path);
         $jsBody = '';
+        $files = [];
+
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot()
                 && !in_array($fileinfo->getFilename(), array_merge(['vendor'], $this->config['excludes']))
                 && $fileinfo !== ''
             ) {
-                $noExt = $this->removeExtension($fileinfo->getFilename());
-                if ($noExt !== '') {
-                    if (class_exists('App')) {
-                        App::setLocale($noExt);
-                    }
-                    if (!in_array($noExt, $this->availableLocales)) {
-                        $this->availableLocales[] = $noExt;
-                    }
-                    if ($fileinfo->isDir()) {
-                        $local = $this->allocateLocaleArray($fileinfo->getRealPath(), $multiLocales);
-                    } else {
-                        $local = $this->allocateLocaleJSON($fileinfo->getRealPath());
-                        if ($local === null) continue;
-                    }
+                $files[] = $fileinfo->getPathname();
+            }
+        }
+        asort($files);
 
-                    if (isset($locales[$noExt])) {
-                        $locales[$noExt] = array_merge($local, $locales[$noExt]);
-                    } else {
-                        $locales[$noExt] = $local;
-                    }
+        foreach ($files as $fileName) {
+            $fileinfo = new \SplFileInfo($fileName);
+            $noExt = $this->removeExtension($fileinfo->getFilename());
+            if ($noExt !== '') {
+                if (class_exists('App')) {
+                    App::setLocale($noExt);
+                }
+                if (!in_array($noExt, $this->availableLocales)) {
+                    $this->availableLocales[] = $noExt;
+                }
+                if ($fileinfo->isDir()) {
+                    $local = $this->allocateLocaleArray($fileinfo->getRealPath(), $multiLocales);
+                } else {
+                    $local = $this->allocateLocaleJSON($fileinfo->getRealPath());
+                    if ($local === null) continue;
+                }
+
+                if (isset($locales[$noExt])) {
+                    $locales[$noExt] = array_merge($local, $locales[$noExt]);
+                } else {
+                    $locales[$noExt] = $local;
                 }
             }
         }
@@ -209,12 +217,19 @@ class Generator
         $data = [];
         $dir = new DirectoryIterator($path);
         $lastLocale = last($this->availableLocales);
+        $files = [];
         foreach ($dir as $fileinfo) {
             // Do not mess with dotfiles at all.
             if ($fileinfo->isDot()) {
                 continue;
             }
 
+            $files[] = $fileinfo->getPathname();
+         }
+         asort($files);
+
+         foreach ($files as $fileName) {
+             $fileinfo = new \SplFileInfo($fileName);
             if ($fileinfo->isDir()) {
                 // Recursivley iterate through subdirs, until everything is allocated.
 
