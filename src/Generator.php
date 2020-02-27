@@ -53,20 +53,17 @@ class Generator
 
         $locales = [];
         $files = [];
-        $dir = new DirectoryIterator($path);
+        $dirList = $this->getDirList($path);
         $jsBody = '';
-        foreach ($dir as $fileinfo) {
-            if (!$fileinfo->isDot()) {
+        foreach ($dirList as $file) {
                 if(!$withVendor
-                    && in_array($fileinfo->getFilename(), array_merge(['vendor'], $this->config['excludes']))
+                    && in_array($file, array_merge(['vendor'], $this->config['excludes']))
                 ) {
                     continue;
                 }
 
-                $files[] = $fileinfo->getRealPath();
-            }
+                $files[] = $path . DIRECTORY_SEPARATOR . $file;
         }
-        asort($files);
 
         foreach ($files as $fileName) {
             $fileinfo = new \SplFileInfo($fileName);
@@ -127,14 +124,11 @@ class Generator
         $locales = [];
         $fileToCreate = '';
         $createdFiles = '';
-        $dir = new DirectoryIterator($path);
+        $dirList = $this->getDirList($path);
         $jsBody = '';
-        foreach ($dir as $fileinfo) {
-            if (!$fileinfo->isDot()
-                && !in_array($fileinfo->getFilename(), array_merge(['vendor'], $this->config['excludes']))
-                && $fileinfo !== ''
-            ) {
-                $noExt = $this->removeExtension($fileinfo->getFilename());
+        foreach ($dirList as $file) {
+            if (!in_array($file, array_merge(['vendor'], $this->config['excludes']))) {
+                $noExt = $this->removeExtension($file);
                 if ($noExt !== '') {
                     if (class_exists('App')) {
                         App::setLocale($noExt);
@@ -142,10 +136,11 @@ class Generator
                     if (!in_array($noExt, $this->availableLocales)) {
                         $this->availableLocales[] = $noExt;
                     }
-                    if ($fileinfo->isDir()) {
-                        $local = $this->allocateLocaleArray($fileinfo->getRealPath(), $multiLocales);
+                    $filePath = $path . DIRECTORY_SEPARATOR . $file;
+                    if (is_dir($filePath)) {
+                        $local = $this->allocateLocaleArray($filePath, $multiLocales);
                     } else {
-                        $local = $this->allocateLocaleJSON($fileinfo->getRealPath());
+                        $local = $this->allocateLocaleJSON($filePath);
                         if ($local === null) continue;
                     }
 
@@ -207,21 +202,15 @@ class Generator
     private function allocateLocaleArray($path, $multiLocales = false)
     {
         $data = [];
-        $dir = new DirectoryIterator($path);
+        $dirList = $this->getDirList($path);
         $lastLocale = last($this->availableLocales);
-        foreach ($dir as $fileinfo) {
-            // Do not mess with dotfiles at all.
-            if ($fileinfo->isDot()) {
-                continue;
-            }
-
-            if ($fileinfo->isDir()) {
-                // Recursivley iterate through subdirs, until everything is allocated.
-
-                $data[$fileinfo->getFilename()] = $this->allocateLocaleArray($path . DIRECTORY_SEPARATOR . $fileinfo->getFilename());
+        foreach ($dirList as $file) {
+            $fileName = $path . DIRECTORY_SEPARATOR . $file;
+            if (is_dir($fileName)) {
+                // Recursively iterate through subdirs, until everything is allocated.
+                $data[$file] = $this->allocateLocaleArray($fileName);
             } else {
-                $noExt = $this->removeExtension($fileinfo->getFilename());
-                $fileName = $path . DIRECTORY_SEPARATOR . $fileinfo->getFilename();
+                $noExt = $this->removeExtension($file);
 
                 // Ignore non *.php files (ex.: .gitignore, vim swap files etc.)
                 if (pathinfo($fileName, PATHINFO_EXTENSION) !== 'php') {
@@ -360,6 +349,17 @@ class Generator
             },
             $s
         );
+    }
+
+    /**
+     * Gets sorted directory list excluding dot files
+     *
+     * @param string $path
+     * @return array
+     */
+    private function getDirList($path)
+    {
+        return array_diff(scandir($path), ['.', '..']);
     }
 
     /**
