@@ -1,9 +1,7 @@
 <?php namespace MartinLindhe\VueInternationalizationGenerator;
 
-use DirectoryIterator;
-use Exception;
 use App;
-use Traversable;
+use Exception;
 
 class Generator
 {
