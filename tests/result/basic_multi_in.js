@@ -10,6 +10,7 @@ export default {
         }
     },
     "sv": {
+        "Documentation": "Dokumentation",
         "help": {
             "yes": "ja",
             "no": "nej"

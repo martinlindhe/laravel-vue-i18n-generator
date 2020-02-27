@@ -2,7 +2,7 @@
 
 use MartinLindhe\VueInternationalizationGenerator\Generator;
 
-class SingleFileGeneratorTest extends \PHPUnit_Framework_TestCase
+class SingleFileGeneratorTest extends \Orchestra\Testbench\TestCase
 {
     private $config = [];
 
