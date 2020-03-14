@@ -158,7 +158,7 @@ class Generator
             }
         }
         foreach ($this->filesToCreate as $fileName => $data) {
-            $fileToCreate = $jsPath . $fileName . '.js';
+            $fileToCreate = $jsPath . $fileName . '.' . $this->config['outputExtension'];
             $createdFiles .= $fileToCreate . PHP_EOL;
             $jsonLocales = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL;
             if (json_last_error() !== JSON_ERROR_NONE) {
