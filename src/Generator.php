@@ -208,7 +208,7 @@ class Generator
     {
         $data = [];
         $dir = new DirectoryIterator($path);
-        $lastLocale = last($this->availableLocales);
+
         foreach ($dir as $fileinfo) {
             // Do not mess with dotfiles at all.
             if ($fileinfo->isDot()) {
@@ -222,6 +222,7 @@ class Generator
             } else {
                 $noExt = $this->removeExtension($fileinfo->getFilename());
                 $fileName = $path . DIRECTORY_SEPARATOR . $fileinfo->getFilename();
+                $lastLocale = basename(dirname($fileName));
 
                 // Ignore non *.php files (ex.: .gitignore, vim swap files etc.)
                 if (pathinfo($fileName, PATHINFO_EXTENSION) !== 'php') {
