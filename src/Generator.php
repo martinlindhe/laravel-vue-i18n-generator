@@ -160,7 +160,7 @@ class Generator
         foreach ($this->filesToCreate as $fileName => $data) {
             $fileToCreate = $jsPath . $fileName . '.js';
             $createdFiles .= $fileToCreate . PHP_EOL;
-            $jsonLocales = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL;
+            $jsonLocales = json_encode([$fileName => $locales[$fileName]], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL;
             if (json_last_error() !== JSON_ERROR_NONE) {
                 throw new Exception('Could not generate JSON, error code '.json_last_error());
             }
@@ -208,7 +208,6 @@ class Generator
     {
         $data = [];
         $dir = new DirectoryIterator($path);
-        $lastLocale = last($this->availableLocales);
         foreach ($dir as $fileinfo) {
             // Do not mess with dotfiles at all.
             if ($fileinfo->isDot()) {
@@ -222,6 +221,7 @@ class Generator
             } else {
                 $noExt = $this->removeExtension($fileinfo->getFilename());
                 $fileName = $path . DIRECTORY_SEPARATOR . $fileinfo->getFilename();
+                $lastLocale = basename(dirname($fileName));
 
                 // Ignore non *.php files (ex.: .gitignore, vim swap files etc.)
                 if (pathinfo($fileName, PATHINFO_EXTENSION) !== 'php') {
