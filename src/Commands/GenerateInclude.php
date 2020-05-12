@@ -11,7 +11,7 @@ class GenerateInclude extends Command
      *
      * @var string
      */
-    protected $signature = 'vue-i18n:generate {--umd} {--multi} {--with-vendor} {--file-name=} {--lang-files=} {--format=es6} {--multi-locales}';
+    protected $signature = 'vue-i18n:generate {--umd} {--multi} {--with-vendor} {--file-name=} {--lang-files=} {--format=es6} {--multi-locales} {--root-path=}';
 
     /**
      * The console command description.
@@ -27,7 +27,7 @@ class GenerateInclude extends Command
      */
     public function handle()
     {
-        $root = base_path() . config('vue-i18n-generator.langPath');
+        $root = $this->option('root-path');
         $config = config('vue-i18n-generator');
 
         // options
@@ -38,6 +38,12 @@ class GenerateInclude extends Command
         $langFiles = $this->option('lang-files');
         $format = $this->option('format');
         $multipleLocales = $this->option('multi-locales');
+
+        if( $root == null || empty($root) ){
+            $root = config('vue-i18n-generator.langPath');
+        }
+
+        $root = base_path() . $root;
 
         if ($umd) {
             // if the --umd option is set, set the $format to 'umd'
